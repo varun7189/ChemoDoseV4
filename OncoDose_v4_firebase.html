@@ -1,0 +1,2736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OncoDose v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d1b2a; --ink-soft:#2c3e50; --ink-muted:#7f8c8d;
+  --paper:#f8f6f2; --paper-warm:#ede8e0; --card:#ffffff;
+  --accent:#c0392b; --accent-light:#fdecea;
+  --green:#1a6b45; --green-light:#e8f5ee;
+  --blue:#154360; --blue-light:#eaf2fb;
+  --amber:#d68910; --amber-light:#fef9e7;
+  --purple:#6c3483; --purple-light:#f5eef8;
+  --teal:#0e6655; --teal-light:#e8f8f5;
+  --rose:#922b21; --rose-light:#fdedec;
+  --slate:#717d7e; --slate-light:#f2f3f4;
+  --border:#ddd8d0; --border-dark:#b2bec3;
+  --shadow:0 2px 8px rgba(13,27,42,0.08);
+  --shadow-md:0 4px 16px rgba(13,27,42,0.12);
+  --shadow-lg:0 8px 32px rgba(13,27,42,0.16);
+  --r:7px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;font-size:13.5px;}
+
+/* ── HEADER ── */
+.hdr{background:var(--ink);color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,0.4);}
+.logo{font-family:'Playfair Display',serif;font-size:20px;letter-spacing:-0.5px;display:flex;align-items:baseline;gap:6px;}
+.logo span{color:#e74c3c;}
+.logo sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:#f39c12;font-style:normal;}
+.hdr-sub{font-size:10px;color:#7f8c8d;font-family:'JetBrains Mono',monospace;margin-top:1px;}
+.hdr-right{display:flex;gap:8px;align-items:center;}
+
+/* MODE TOGGLE */
+.mode-toggle{display:flex;background:rgba(255,255,255,0.1);border-radius:20px;padding:3px;gap:2px;}
+.mode-btn{padding:4px 14px;border-radius:16px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;color:rgba(255,255,255,0.6);background:transparent;transition:all 0.2s;}
+.mode-btn.active{background:#fff;color:var(--ink);font-weight:600;}
+
+/* ── TABS ── */
+.tabs{display:flex;background:var(--ink);padding:0 24px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.tab{padding:10px 16px;color:#7f8c8d;cursor:pointer;font-size:12.5px;font-weight:500;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;}
+.tab:hover{color:#fff;}
+.tab.active{color:#e74c3c;border-bottom-color:#e74c3c;}
+
+/* ── LAYOUT ── */
+.body{display:flex;height:calc(100vh - 84px);overflow:hidden;}
+.left{width:300px;min-width:300px;background:var(--card);border-right:1px solid var(--border);overflow-y:auto;padding:16px;}
+.right{flex:1;overflow-y:auto;padding:20px;background:var(--paper);}
+
+/* ── FORM ── */
+.sec{margin-bottom:18px;}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:13px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;color:var(--ink);}
+.badge{font-family:'JetBrains Mono',monospace;font-size:9px;background:var(--ink);color:#fff;padding:1px 5px;border-radius:3px;}
+.row{display:flex;gap:6px;margin-bottom:6px;}
+.fg{flex:1;}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--ink-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--r);background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;color:var(--ink);transition:all 0.15s;}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-light);}
+.fg input[readonly]{background:var(--paper-warm);color:var(--ink-muted);}
+
+/* ── RESULT BOXES ── */
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.rb{padding:9px 11px;border-radius:var(--r);color:#fff;}
+.rb.blue{background:var(--blue);}
+.rb.green{background:var(--green);}
+.rb.accent{background:var(--accent);grid-column:1/-1;}
+.rb-label{font-size:9px;opacity:0.7;text-transform:uppercase;letter-spacing:0.5px;font-family:'JetBrains Mono',monospace;}
+.rb-val{font-size:16px;font-family:'Playfair Display',serif;margin-top:2px;}
+.rb-unit{font-size:9px;opacity:0.6;}
+
+/* ── BUTTONS ── */
+.btn{padding:6px 12px;border-radius:var(--r);border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;font-weight:500;transition:all 0.15s;}
+.btn-ink{background:var(--ink);color:#fff;}
+.btn-ink:hover{background:var(--ink-soft);}
+.btn-accent{background:var(--accent);color:#fff;}
+.btn-outline{background:transparent;color:var(--ink);border:1px solid var(--border);}
+.btn-outline:hover{background:var(--paper-warm);}
+.btn-sm{padding:3px 9px;font-size:11px;}
+.btn-danger{background:#fdecea;color:#922b21;border:1px solid #f1948a;}
+.btn-danger:hover{background:#f1948a;color:#fff;}
+.btn-ghost{background:transparent;border:none;cursor:pointer;padding:3px 7px;font-size:15px;color:var(--ink-muted);transition:all 0.15s;}
+.btn-ghost:hover{color:var(--ink);}
+.btn-ghost:disabled{opacity:0.2;cursor:not-allowed;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-teal{background:var(--teal);color:#fff;}
+
+/* ── PHASE CARD ── */
+.phase-card{border-radius:10px;margin-bottom:12px;overflow:hidden;border:1px solid var(--border);background:#fff;box-shadow:var(--shadow);}
+.phase-hdr{padding:10px 13px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+.ph-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;color:#fff;}
+.ph-name-inp{border:none;background:transparent;font-weight:600;font-size:13.5px;font-family:'Plus Jakarta Sans',sans-serif;cursor:text;min-width:0;flex:1;}
+.ph-meta{font-size:10px;color:var(--ink-muted);font-family:'JetBrains Mono',monospace;margin-top:1px;}
+.ph-type-badge{font-size:9px;padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-weight:500;white-space:nowrap;}
+.phase-body{padding:0 13px 13px;border-top:1px solid var(--border);}
+.phase-settings{display:grid;gap:6px;padding:10px 0 7px;}
+
+/* PHASE COLORS */
+.ph-chemo{background:#154360;}
+.ph-surgery{background:#6c3483;}
+.ph-rt{background:#1a6b45;}
+.ph-ctrt{background:#d68910;}
+.ph-recovery{background:#566573;}
+.ph-followup{background:#922b21;}
+.bc-chemo{background:#eaf2fb;color:#154360;}
+.bc-surgery{background:#f5eef8;color:#6c3483;}
+.bc-rt{background:#e8f5ee;color:#1a6b45;}
+.bc-ctrt{background:#fef9e7;color:#d68910;}
+.bc-recovery{background:#f2f3f4;color:#566573;}
+.bc-followup{background:#fdedec;color:#922b21;}
+
+/* ── GAP BLOCK ── */
+.gap-blk{background:var(--paper-warm);border:1px dashed var(--border-dark);border-radius:8px;padding:9px 12px;margin-top:8px;display:flex;gap:10px;align-items:flex-start;}
+
+/* ── DRUG ENTRY ── */
+.drug-entry{background:var(--paper-warm);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:7px;}
+.drug-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.drug-name{font-weight:600;font-size:12.5px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.dt-tag{font-size:9px;padding:2px 6px;border-radius:10px;font-family:'JetBrains Mono',monospace;}
+.tag-bsa{background:var(--blue-light);color:var(--blue);}
+.tag-wt{background:var(--green-light);color:var(--green);}
+.tag-fix{background:var(--accent-light);color:var(--accent);}
+.tag-auc{background:var(--amber-light);color:var(--amber);}
+
+/* DAY CHIPS */
+.day-chips{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:7px;}
+.dc{width:25px;height:25px;border-radius:50%;border:1px solid var(--border);background:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.12s;font-family:'JetBrains Mono',monospace;}
+.dc.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+/* CYCLE TABLE */
+.cyc-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px;}
+.cyc-tbl th{text-align:left;padding:4px 6px;font-size:9px;text-transform:uppercase;letter-spacing:0.4px;color:var(--ink-muted);background:var(--paper-warm);font-weight:600;}
+.cyc-tbl td{padding:4px 6px;border-top:1px solid var(--border);vertical-align:middle;}
+.pct-btns{display:flex;gap:2px;flex-wrap:wrap;}
+.pb{padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:#fff;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all 0.1s;}
+.pb:hover,.pb.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.pi{width:44px;padding:2px 4px;border:1px solid var(--border);border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;text-align:center;}
+.sk-btn{font-size:9px;padding:2px 6px;border-radius:4px;border:1px solid var(--border);cursor:pointer;background:#fff;white-space:nowrap;}
+.sk-btn.on{background:#fdecea;border-color:#f1948a;color:#922b21;}
+.row-skip td{opacity:0.3;text-decoration:line-through;}
+
+/* VIAL BOX */
+.vial-box{background:#fff;border:1px solid var(--border);border-radius:6px;padding:7px 9px;margin-top:5px;font-size:11px;}
+.vial-combo{font-family:'JetBrains Mono',monospace;font-size:10px;margin-bottom:2px;}
+.ud-flag{background:var(--amber-light);border:1px solid var(--amber);border-radius:4px;padding:4px 7px;font-size:10px;color:var(--amber);margin-top:3px;display:flex;gap:4px;}
+.cost-mini{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:5px;}
+.cm{padding:5px 7px;border-radius:5px;}
+.cm.mrp{background:var(--accent-light);}
+.cm.lp{background:var(--green-light);}
+.cm-label{font-size:9px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.3px;}
+.cm-val{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+
+/* TOLERANCE */
+.tol-row{display:flex;align-items:center;gap:6px;margin:4px 0;}
+.tol-row label{font-size:10px;color:var(--ink-muted);white-space:nowrap;}
+.tol-row input[type=range]{flex:1;height:3px;accent-color:var(--accent);}
+.tol-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--accent);min-width:30px;}
+
+/* LOADING TOGGLE */
+.load-tog{display:flex;align-items:center;gap:7px;padding:5px 8px;background:var(--amber-light);border-radius:6px;border:1px solid #f0b027;margin-bottom:6px;}
+.tog{position:relative;width:30px;height:16px;background:var(--border);border-radius:8px;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.tog.on{background:var(--amber);}
+.tog::after{content:'';position:absolute;width:10px;height:10px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left 0.2s;}
+.tog.on::after{left:17px;}
+
+/* FOLLOW-UP VISITS */
+.visit-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:#fff;margin-bottom:4px;}
+.visit-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-muted);min-width:40px;}
+.visit-planned{font-size:11px;color:var(--ink-muted);font-family:'JetBrains Mono',monospace;min-width:80px;}
+.visit-actual{font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-family:'JetBrains Mono',monospace;width:110px;}
+.visit-actual.done{border-color:var(--green);background:var(--green-light);}
+.visit-status{font-size:10px;color:var(--ink-muted);}
+
+/* ROADMAP */
+.rm-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow);}
+.rm-phase-band{margin-bottom:16px;}
+.rm-phase-hdr{font-family:'Playfair Display',serif;font-size:13px;margin-bottom:7px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.rm-scroll{overflow-x:auto;padding-bottom:6px;}
+.rm-grid{display:flex;gap:0;min-width:max-content;}
+.rm-cyc-blk{display:inline-flex;flex-direction:column;border-right:2px solid var(--border);padding-right:3px;margin-right:3px;}
+.rm-cyc-lbl{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--ink-muted);margin-bottom:3px;text-align:center;padding:2px 4px;background:var(--paper-warm);border-radius:3px;}
+.rm-days{display:flex;}
+.rm-day{min-width:46px;text-align:center;}
+.rm-day-hdr{padding:3px 2px;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--ink-muted);border-bottom:2px solid var(--border);margin-bottom:4px;}
+.rm-day-hdr.tx{color:var(--ink);font-weight:700;}
+.rm-day-date{font-size:8px;color:var(--ink-muted);margin-top:1px;}
+.rm-dots{display:flex;flex-direction:column;gap:2px;padding:0 2px;}
+.rm-dot{width:100%;padding:3px 2px;border-radius:3px;font-size:8px;text-align:center;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rm-date-ov{width:88px;padding:2px 4px;border:1px solid var(--border);border-radius:4px;font-size:10px;margin-top:4px;font-family:'JetBrains Mono',monospace;}
+.rm-date-ov.mod{border-color:var(--amber);background:var(--amber-light);}
+.gap-band{display:flex;align-items:center;gap:8px;margin:5px 0;padding:6px 10px;background:var(--paper-warm);border-radius:7px;border:1px dashed var(--border-dark);}
+.event-band{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 16px;border-radius:8px;margin-right:6px;min-width:110px;}
+.rt-band{background:#1a6b45;color:#fff;border-radius:8px;padding:10px 14px;display:inline-block;min-width:200px;}
+.rt-week{display:inline-flex;flex-direction:column;margin-right:3px;vertical-align:top;}
+.rt-wk-lbl{font-size:8px;font-family:'JetBrains Mono',monospace;opacity:0.6;margin-bottom:2px;text-align:center;}
+.rt-days-row{display:flex;gap:2px;}
+.rt-d{width:20px;height:20px;border-radius:3px;font-size:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;}
+.rt-d.fx{background:rgba(255,255,255,0.25);color:#fff;font-weight:600;}
+.rt-d.off{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.25);}
+.rt-d.chemo{background:#f39c12;color:#000;font-weight:700;}
+.fu-band{display:flex;gap:4px;flex-wrap:wrap;}
+.fu-visit{display:inline-flex;flex-direction:column;align-items:center;padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:#fff;min-width:70px;text-align:center;}
+.fu-visit.done{border-color:var(--green);background:var(--green-light);}
+.fu-visit.pending{border-color:var(--border);background:#fff;}
+
+/* DC COLORS */
+.dca{background:#dbeafe;color:#1e40af;}
+.dcb{background:#dcfce7;color:#166534;}
+.dcc{background:#fce7f3;color:#9d174d;}
+.dcd{background:#ffedd5;color:#9a3412;}
+.dce{background:#ede9fe;color:#5b21b6;}
+.dcf{background:#fef9c3;color:#854d0e;}
+.dcg{background:#fee2e2;color:#991b1b;}
+.dch{background:#f0fdf4;color:#15803d;}
+
+/* BILLING */
+.bill-card{border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow-md);}
+.bc-ink{background:var(--ink);color:#fff;}
+.bc-blue{background:#154360;color:#fff;}
+.bc-purple{background:#4a235a;color:#fff;}
+.bc-green-d{background:#1a5e41;color:#fff;}
+.bc-amber-d{background:#7d6608;color:#fff;}
+.bc-slate{background:#2e4053;color:#fff;}
+.bc-grand{background:#1a0a2e;color:#fff;}
+.bill-title{font-family:'Playfair Display',serif;font-size:15px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.18);letter-spacing:-0.2px;}
+.bt{width:100%;border-collapse:collapse;}
+.bt th{text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:0.4px;color:rgba(255,255,255,0.45);padding:5px 8px;font-family:'JetBrains Mono',monospace;font-weight:400;border-bottom:1px solid rgba(255,255,255,0.1);}
+.bt td{padding:6px 8px;font-size:11.5px;border-top:1px solid rgba(255,255,255,0.07);vertical-align:middle;}
+.bt .tr-tot td{font-weight:700;font-size:13px;border-top:1px solid rgba(255,255,255,0.3);padding-top:8px;}
+.bt .tr-sub td{background:rgba(255,255,255,0.04);font-weight:600;}
+.bt .tr-sk td{opacity:0.3;text-decoration:line-through;}
+.mn{font-family:'JetBrains Mono',monospace;}
+.mn.mrp{color:#f1948a;}
+.mn.lp{color:#82e0aa;}
+.mn.mg{color:#f9e79f;}
+.mn.hs{color:#85c1e9;}
+
+/* FORMULARY TAB */
+.form-table{width:100%;border-collapse:collapse;font-size:12px;}
+.form-table th{text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:var(--ink-muted);background:var(--paper-warm);font-weight:600;position:sticky;top:0;}
+.form-table td{padding:7px 10px;border-top:1px solid var(--border);vertical-align:middle;}
+.form-table tr:hover td{background:var(--paper-warm);}
+.form-inp{width:100%;padding:3px 5px;border:1px solid transparent;border-radius:4px;font-size:11.5px;font-family:'Plus Jakarta Sans',sans-serif;background:transparent;}
+.form-inp:focus{border-color:var(--blue);background:#fff;outline:none;}
+.sku-pill{display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue);border-radius:12px;padding:2px 8px;font-size:10px;font-family:'JetBrains Mono',monospace;margin:2px;}
+
+/* PRINT */
+@media print{
+  .no-print{display:none!important;}
+  .body{height:auto;overflow:visible;display:block;}
+  .left{display:none;}
+  .tabs{display:none;}
+  .hdr{position:relative;}
+  #tab-billing{display:block!important;}
+  #tab-roadmap{display:none!important;}
+  /* BILLING print — compact patient header, no blank page */
+  .print-hdr{display:block!important;padding:6px 0 4px!important;margin:0!important;}
+  .print-hdr div:first-child{font-size:16px!important;margin-bottom:2px!important;}
+  .print-hdr div:last-child{font-size:9px!important;}
+  .print-patient{display:block!important;padding:4px 0 6px!important;margin:0 0 8px!important;border-bottom:1px solid #ccc;}
+  .print-patient > div{gap:4px!important;font-size:10px!important;}
+  /* First bill card — no page break, flows right after patient block */
+  .bill-card{background:#fff!important;color:#000!important;border:1px solid #ddd!important;box-shadow:none!important;margin-bottom:8px!important;padding:10px!important;}
+  /* Cards flow naturally — only break if card doesn't fit */
+  .bill-card{break-inside:avoid;}
+  .bill-title{color:#000!important;border-bottom-color:#ccc!important;font-size:12px!important;margin-bottom:8px!important;padding-bottom:5px!important;}
+  .bt th{color:#555!important;background:#f5f5f5!important;border-bottom:1px solid #ccc!important;font-size:9px!important;}
+  .bt td{color:#000!important;border-top-color:#ddd!important;font-size:10px!important;padding:4px 6px!important;}
+  .bt .tr-tot td{border-top-color:#333!important;font-weight:700;font-size:11px!important;}
+  .bt .tr-sub td{background:#f9f9f9!important;}
+  .mn.mrp{color:#c0392b!important;}
+  .mn.lp{color:#1a6b45!important;}
+  .mn.mg{color:#d68910!important;}
+  .mn.hs{color:#154360!important;}
+  /* ROADMAP print */
+  .rm-wrap{border:none!important;box-shadow:none!important;padding:0!important;}
+  .rm-phase-band{break-inside:avoid;margin-bottom:12px!important;}
+  .rm-phase-hdr{font-size:12px!important;background:#f5f5f5;padding:6px 8px;border-radius:4px;margin-bottom:6px;}
+  .rm-cyc-lbl{background:#e8e8e8!important;color:#333!important;}
+  .rm-day-hdr{border-bottom-color:#999!important;}
+  .rm-day-hdr.tx{color:#000!important;font-weight:700;}
+  .rm-date-ov{display:none!important;}
+  .rm-dot{print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+  .rt-band{print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+  .event-band{print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+  .gap-band{background:#f0f0f0!important;border:1px solid #ccc!important;}
+  .rm-scroll{overflow:visible!important;}
+  .btn-ghost,.btn-sm,.add-btn,.btn-outline{display:none!important;}
+  @page{margin:12mm;size:A4;}
+}
+.print-hdr{display:none;}
+.print-patient{display:none;}
+
+/* MISC */
+.empty-state{text-align:center;padding:30px 16px;color:var(--ink-muted);}
+.empty-icon{font-size:32px;margin-bottom:7px;}
+.pill{display:inline-flex;align-items:center;gap:4px;background:var(--paper-warm);border:1px solid var(--border);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--ink-soft);}
+.add-btn{width:100%;padding:8px;border:2px dashed var(--border);border-radius:8px;background:transparent;cursor:pointer;font-size:12px;color:var(--ink-muted);transition:all 0.2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.add-btn:hover{border-color:var(--ink);color:var(--ink);}
+.toast{position:fixed;bottom:16px;right:16px;background:var(--ink);color:#fff;padding:8px 16px;border-radius:7px;font-size:12.5px;box-shadow:var(--shadow-lg);animation:si 0.3s ease;z-index:999;}
+@keyframes si{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+details summary{cursor:pointer;font-size:10px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:0.5px;padding:3px 0;user-select:none;}
+.hosp-sec{background:var(--blue-light);border:1px solid #aed6f1;border-radius:8px;padding:10px;margin-bottom:12px;}
+.hc-cat{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin:7px 0 4px;}
+.hc-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.hc-row label{font-size:11px;color:var(--ink-soft);min-width:120px;}
+.inp-xs{width:72px;padding:3px 5px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:'JetBrains Mono',monospace;}
+.saved-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;transition:all 0.2s;box-shadow:var(--shadow);}
+.saved-card:hover{border-color:var(--ink);}
+.patient-fields{background:var(--blue-light);border:1px solid #aed6f1;border-radius:8px;padding:10px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<div class="hdr no-print">
+  <div>
+    <div class="logo">Onco<span>Dose</span><sub>v4</sub></div>
+    <div class="hdr-sub">Multi-phase · All modalities · Template & Patient tracking</div>
+  </div>
+  <div class="hdr-right">
+    <!-- Firebase auth bar — hidden until Firebase is configured -->
+    <div id="fbAuthBar" style="display:none;align-items:center;gap:7px;padding:3px 10px;background:rgba(255,255,255,0.08);border-radius:20px;border:1px solid rgba(255,255,255,0.12);">
+      <span id="fbUserInfo" style="font-size:11px;color:rgba(255,255,255,0.85);font-weight:500;"></span>
+      <span id="fbSyncStatus" style="font-size:10px;color:rgba(255,255,255,0.4);min-width:60px;text-align:right;"></span>
+      <button id="fbSignInBtn" onclick="fbSignIn()" style="display:none;padding:3px 10px;background:#4285f4;color:#fff;border:none;border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:500;">🔑 Sign in</button>
+      <button id="fbSignOutBtn" onclick="fbSignOut()" style="display:none;padding:3px 8px;background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:10px;font-size:10px;cursor:pointer;font-family:inherit;">Sign out</button>
+    </div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeTemplate" onclick="setMode('template')">📋 Template</button>
+      <button class="mode-btn" id="modePatient" onclick="setMode('patient')">👤 Patient</button>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="showPrintMenu()">🖨 Print</button>
+    <button class="btn btn-accent btn-sm" onclick="saveRecord()">💾 Save</button>
+  </div>
+</div>
+
+<div class="tabs no-print">
+  <div class="tab active" onclick="switchTab('builder')">💊 Builder</div>
+  <div class="tab" onclick="switchTab('roadmap')">📅 Roadmap</div>
+  <div class="tab" onclick="switchTab('billing')">💰 Billing</div>
+  <div class="tab" onclick="switchTab('saved')">📋 Saved</div>
+  <div class="tab" onclick="switchTab('formulary')">🧪 Formulary</div>
+</div>
+
+<!-- PRINT HEADER -->
+<div class="print-hdr" style="padding:16px 24px;border-bottom:2px solid #333;margin-bottom:16px;">
+  <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;">OncoDose — Chemotherapy Cost Estimate</div>
+  <div style="font-size:11px;color:#666;margin-top:4px;" id="printMeta"></div>
+</div>
+<div class="print-patient" style="padding:8px 24px 16px;border-bottom:1px solid #ccc;margin-bottom:16px;" id="printPatientBlock"></div>
+
+<div class="body">
+<!-- LEFT -->
+<div class="left no-print">
+  <div class="sec">
+    <div class="sec-hdr">Patient Parameters <span class="badge">BSA·GFR</span></div>
+    <div id="patientFields" style="display:none;">
+      <div class="patient-fields">
+        <div class="row"><div class="fg"><label>Patient Name</label><input type="text" id="ptName" placeholder="Full name"></div></div>
+        <div class="row">
+          <div class="fg"><label>MRD / ID</label><input type="text" id="ptId" placeholder="Hospital ID"></div>
+          <div class="fg"><label>DOB</label><input type="date" id="ptDob"></div>
+        </div>
+        <div class="row"><div class="fg"><label>Diagnosis</label><input type="text" id="ptDx" placeholder="e.g. Ca Breast T2N1M0"></div></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Height (cm)</label><input type="number" id="height" placeholder="165" oninput="calcPt()"></div>
+      <div class="fg"><label>Weight (kg)</label><input type="number" id="weight" placeholder="60" oninput="calcPt()"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Age</label><input type="number" id="age" placeholder="45" oninput="calcPt()"></div>
+      <div class="fg"><label>Sex</label><select id="sex" onchange="calcPt()"><option value="M">Male</option><option value="F">Female</option></select></div>
+    </div>
+    <div class="row"><div class="fg"><label>Creatinine (mg/dL)</label><input type="number" id="creat" placeholder="0.9" step="0.01" oninput="calcPt()"></div></div>
+    <div id="templateBsaNote" style="font-size:10px;color:var(--amber);padding:5px 7px;background:var(--amber-light);border-radius:5px;margin-bottom:6px;">
+      📋 Template mode: using standard BSA for estimates. Enter actual values for patient billing.
+    </div>
+    <div class="res-grid">
+      <div class="rb blue"><div class="rb-label">BSA (Mosteller)</div><div class="rb-val" id="bsaVal">—</div><div class="rb-unit">m²</div></div>
+      <div class="rb green"><div class="rb-label">GFR (C-G)</div><div class="rb-val" id="gfrVal">—</div><div class="rb-unit">mL/min</div></div>
+      <div class="rb accent"><div class="rb-label">Carboplatin AUC 5 / 6</div><div class="rb-val" id="carboVal">—</div><div class="rb-unit">mg (Calvert)</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hdr">Regimen Settings</div>
+    <div class="row"><div class="fg"><label>Regimen Name</label><input type="text" id="regimenName" placeholder="e.g. NACT → Surgery → Adj"></div></div>
+    <div class="row" id="startDateRow"><div class="fg"><label>Start Date</label><input type="date" id="startDate" onchange="recalcAll()"></div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hdr">Hospital Charges</div>
+    <div class="hosp-sec">
+      <div class="hc-cat" style="color:var(--blue)">Per Session (× treatment days)</div>
+      <div class="hc-row"><label>Daycare / IV chair</label><input type="number" id="hDaycare" placeholder="0" class="inp-xs" oninput="recalcAll()"> ₹</div>
+      <div class="hc-row"><label>Nursing</label><input type="number" id="hNursing" placeholder="0" class="inp-xs" oninput="recalcAll()"> ₹</div>
+      <div class="hc-row"><label>IV consumables</label><input type="number" id="hConsumables" placeholder="0" class="inp-xs" oninput="recalcAll()"> ₹</div>
+      <div class="hc-row"><label>Other / session</label><input type="number" id="hOtherS" placeholder="0" class="inp-xs" oninput="recalcAll()"> ₹</div>
+      <div class="hc-cat" style="color:var(--green)">Per Cycle (once per cycle)</div>
+      <div class="hc-row"><label>Oncology consult</label><input type="number" id="hConsult" placeholder="0" class="inp-xs" oninput="recalcAll()"> ₹</div>
+      <div class="hc-row"><label>Pharmacy dispensing</label><input type="number" id="hDispensing" placeholder="0" class="inp-xs" oninput="recalcAll()"> ₹</div>
+      <div class="hc-row"><label>Lab / monitoring</label><input type="number" id="hLab" placeholder="0" class="inp-xs" oninput="recalcAll()"> ₹</div>
+      <div class="hc-row"><label>Other / cycle</label><input type="number" id="hOtherC" placeholder="0" class="inp-xs" oninput="recalcAll()"> ₹</div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+  <!-- BUILDER -->
+  <div id="tab-builder">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:19px;">Regimen Builder</h2>
+        <p style="font-size:11px;color:var(--ink-muted);margin-top:2px;">Add phases · Use ↑↓ to reorder · Gap after each phase auto-adjusts dates</p>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <select id="newPhaseType" style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:#fff;">
+          <option value="chemo">💊 Chemotherapy</option>
+          <option value="surgery">🔪 Surgery</option>
+          <option value="rt">☢️ Radiotherapy</option>
+          <option value="ctrt">⚡ Chemoradiation</option>
+          <option value="recovery">🛌 Recovery</option>
+          <option value="followup">🔍 Follow-Up</option>
+        </select>
+        <button class="btn btn-ink" onclick="addPhase()">+ Add Phase</button>
+      </div>
+    </div>
+    <div id="phaseList"><div class="empty-state"><div class="empty-icon">💊</div><div style="font-size:13px;">Select a phase type and click <strong>+ Add Phase</strong></div></div></div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div id="tab-roadmap" style="display:none">
+    <h2 style="font-family:'Playfair Display',serif;font-size:19px;margin-bottom:3px;">Treatment Roadmap</h2>
+    <p style="font-size:11px;color:var(--ink-muted);margin-bottom:14px;">Full multi-phase timeline. Override cycle start dates below each block. Changes cascade automatically.</p>
+    <div id="roadmapContent"><div class="empty-state"><div class="empty-icon">📅</div><div>Add phases to see roadmap.</div></div></div>
+  </div>
+
+  <!-- BILLING -->
+  <div id="tab-billing" style="display:none">
+    <h2 style="font-family:'Playfair Display',serif;font-size:19px;margin-bottom:3px;" id="billTitle">Billing Summary</h2>
+    <p style="font-size:11px;color:var(--ink-muted);margin-bottom:14px;">Per session → per cycle → per phase → full course grand total.</p>
+    <div id="billingContent"><div class="empty-state"><div class="empty-icon">💰</div><div>Add phases and drugs to see billing.</div></div></div>
+  </div>
+
+  <!-- SAVED -->
+  <div id="tab-saved" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h2 style="font-family:'Playfair Display',serif;font-size:19px;">Saved Records</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="filterSaved('template')" id="filterTemplate">📋 Templates</button>
+        <button class="btn btn-outline btn-sm" onclick="filterSaved('patient')" id="filterPatient">👤 Patients</button>
+        <button class="btn btn-outline btn-sm" onclick="filterSaved('all')" id="filterAll">All</button>
+      </div>
+    </div>
+    <div id="savedList"></div>
+  </div>
+
+  <!-- FORMULARY -->
+  <div id="tab-formulary" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:19px;">Drug Formulary</h2>
+        <p style="font-size:11px;color:var(--ink-muted);margin-top:2px;">Click any drug to edit. All changes apply immediately.</p>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <label class="btn btn-outline btn-sm" style="cursor:pointer;">📥 Import CSV<input type="file" accept=".csv" style="display:none" onchange="importFormulary(event)"></label>
+        <button class="btn btn-outline btn-sm" onclick="exportFormulary()">📤 Export CSV</button>
+        <button class="btn btn-ink btn-sm" onclick="addFormularyDrug()">+ Add Drug</button>
+      </div>
+    </div>
+    <!-- Two-panel layout: list left, detail right -->
+    <div style="display:flex;gap:14px;height:calc(100vh - 180px);">
+      <!-- Drug list -->
+      <div style="width:220px;min-width:220px;display:flex;flex-direction:column;gap:6px;">
+        <input id="fmSearch" type="text" placeholder="🔍 Search drugs..." 
+          style="padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;width:100%;"
+          oninput="renderFormulary()">
+        <div id="fmDrugList" style="flex:1;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:#fff;"></div>
+      </div>
+      <!-- Drug detail -->
+      <div id="fmDetail" style="flex:1;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:#fff;padding:16px;">
+        <div class="empty-state"><div class="empty-icon">💊</div><div style="font-size:13px;">Select a drug from the list to edit</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PRINT MENU MODAL -->
+<div id="printModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:none;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:24px;min-width:300px;box-shadow:var(--shadow-lg);">
+    <h3 style="font-family:'Playfair Display',serif;font-size:17px;margin-bottom:16px;">Select Print Mode</h3>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button class="btn btn-ink" onclick="doPrint('patient')">👤 Patient Copy — MRP only</button>
+      <button class="btn btn-green" onclick="doPrint('hospital')">🏥 Hospital Copy — Full billing</button>
+      <button class="btn btn-teal" onclick="doPrint('roadmap')">📅 Roadmap — Treatment Timeline</button>
+      <button class="btn btn-outline" onclick="closePrintModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc }
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyAJqZfFhwqguok_D2KY6vDBQVAUu7PuZn8",
+    authDomain:        "oncodose-9102a.firebaseapp.com",
+    projectId:         "oncodose-9102a",
+    storageBucket:     "oncodose-9102a.firebasestorage.app",
+    messagingSenderId: "318029546875",
+    appId:             "1:318029546875:web:09d8db54b8cd86a4b269de",
+    measurementId:     "G-CVSBLWWRSG"
+  };
+
+  const fbReady = true;
+  let auth, db, currentUser = null;
+
+  if (fbReady) {
+    try {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db   = getFirestore(app);
+      onAuthStateChanged(auth, user => {
+        currentUser = user;
+        if (user) { if(window._fbSignedIn) window._fbSignedIn(user); }
+        else       { if(window._fbSignedOut) window._fbSignedOut(); }
+      });
+    } catch(e) { console.warn("Firebase init:", e.message); }
+  }
+
+  const uid = () => currentUser?.uid;
+
+  window.FB = {
+    ready:   () => fbReady,
+    user:    () => currentUser,
+
+    signInGoogle: async () => {
+      try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+      catch(e) { return e.message; }
+    },
+    signInEmail: async (email, password) => {
+      try { await signInWithEmailAndPassword(auth, email, password); return null; }
+      catch(e) { return e.message; }
+    },
+    registerEmail: async (email, password, name) => {
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        if(name) await updateProfile(cred.user, {displayName: name});
+        return null;
+      } catch(e) { return e.message; }
+    },
+    signOut: async () => { try { await signOut(auth); } catch(e) {} },
+
+    saveFormulary: async (data) => {
+      if(!uid()||!fbReady) return false;
+      try { await setDoc(doc(db,"users",uid(),"settings","formulary"),{data,t:Date.now()}); return true; }
+      catch(e) { return false; }
+    },
+    loadFormulary: async () => {
+      if(!uid()||!fbReady) return null;
+      try { const s=await getDoc(doc(db,"users",uid(),"settings","formulary")); return s.exists()?s.data().data:null; }
+      catch(e) { return null; }
+    },
+    saveRecord: async (rec) => {
+      if(!uid()||!fbReady) return false;
+      try { await setDoc(doc(db,"users",uid(),"records",String(rec.id)),rec); return true; }
+      catch(e) { return false; }
+    },
+    loadRecords: async () => {
+      if(!uid()||!fbReady) return null;
+      try { const s=await getDocs(collection(db,"users",uid(),"records")); return s.docs.map(d=>d.data()); }
+      catch(e) { return null; }
+    },
+    deleteRecord: async (id) => {
+      if(!uid()||!fbReady) return false;
+      try { await deleteDoc(doc(db,"users",uid(),"records",String(id))); return true; }
+      catch(e) { return false; }
+    },
+  };
+</script>
+
+<script>
+// ═══════════════════════════════════════════
+// FORMULARY (loaded from localStorage or default)
+// ═══════════════════════════════════════════
+const DEFAULT_FORMULARY = [
+  {mol:"CYTARABINE",skus:[{b:"ARASID-1000",s:1000,mrp:615.39,lp:468.85,mfr:"Intas"},{b:"ARASID-100",s:100,mrp:146.57,lp:111.66,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"PEG L ASPARAGINASE",skus:[{b:"ASPARZA 3750IU",s:3750,mrp:25781.25,lp:19642.86,mfr:"Intas"}],dt:"fixed",tol:5},
+  {mol:"BENDAMUSTINE",skus:[{b:"BENZZ-100MG",s:100,mrp:4705.77,lp:1450,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"BEVACIZUMAB",skus:[{b:"BEVATAS 400MG",s:400,mrp:56991,lp:9300,mfr:"Intas"},{b:"BEVATAS 300MG",s:300,mrp:18000,lp:7500,mfr:"Intas"},{b:"BEVATAS 100MG",s:100,mrp:14867.5,lp:2400,mfr:"Intas"}],dt:"weight",tol:10},
+  {mol:"BORTEZOMIB",skus:[{b:"BORVIZ 2.5MG",s:2.5,mrp:4319.49,lp:1800,mfr:"Intas"},{b:"BORVIZ 2MG",s:2,mrp:3713.18,lp:1500,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"BUSULFAN",skus:[{b:"BUFATAS 60MG",s:60,mrp:11632.5,lp:2500,mfr:"Intas"}],dt:"weight",tol:5},
+  {mol:"CARBOPLATIN",skus:[{b:"CARBOPA-450",s:450,mrp:2839.58,lp:1666.67,mfr:"Intas"},{b:"CARBOPA-150",s:150,mrp:946.52,lp:565.56,mfr:"Intas"}],dt:"auc",tol:5},
+  {mol:"CARFILZOMIB",skus:[{b:"CARFIZOME 60MG",s:60,mrp:12465,lp:3500,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"CAPECITABINE",skus:[{b:"CAPSY 500MG",s:500,mrp:1204.18,lp:120,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"CISPLATIN",skus:[{b:"CISPLATIN 50MG",s:50,mrp:800,lp:280,mfr:"Intas"},{b:"CISPLATIN 10MG",s:10,mrp:200,lp:70,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"PACLITAXEL",skus:[{b:"CYTAX 300MG",s:300,mrp:11507.48,lp:1800,mfr:"Intas"},{b:"CYTAX 260MG",s:260,mrp:9974.68,lp:900,mfr:"Intas"},{b:"CYTAX 100MG",s:100,mrp:3836.59,lp:700,mfr:"Intas"},{b:"CYTAX 30MG",s:30,mrp:1150.74,lp:350,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"NAB PACLITAXEL",skus:[{b:"CYTAX-NAB 100MG",s:100,mrp:7247.81,lp:2550,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"DACARBAZINE",skus:[{b:"DABAZ-500MG",s:500,mrp:554.23,lp:415.03,mfr:"Intas"},{b:"DABAZ-200MG",s:200,mrp:407.8,lp:235.56,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"DECITABINE",skus:[{b:"DECINTAS-50MG",s:50,mrp:5303.2,lp:2500,mfr:"Intas"},{b:"DECINTAS-30MG",s:30,mrp:4443.98,lp:1800,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"NANOSOMAL DOCETAXEL",skus:[{b:"DOCEAQUALIP 80MG",s:80,mrp:19415.63,lp:10154,mfr:"Intas"},{b:"DOCEAQUALIP 20MG",s:20,mrp:4854.38,lp:2538,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"TRASTUZUMAB",skus:[{b:"ELEFTHA 440MG",s:440,mrp:19202.1,lp:6500,mfr:"Intas"},{b:"ELEFTHA 375MG",s:375,mrp:14053.13,lp:7500,mfr:"Intas"},{b:"ELEFTHA 150MG",s:150,mrp:6491.72,lp:2500,mfr:"Intas"}],dt:"weight",hl:true,ldp:8,mdp:6,tol:10},
+  {mol:"EPIRUBICIN",skus:[{b:"EPITAZ 100MG",s:100,mrp:3835.5,lp:2656.76,mfr:"Intas"},{b:"EPITAZ 50MG",s:50,mrp:2087.25,lp:1445.71,mfr:"Intas"},{b:"EPITAZ 10MG",s:10,mrp:603.25,lp:417.9,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"DENOSUMAB",skus:[{b:"ESENTRA 120MG",s:120,mrp:29947.5,lp:8200,mfr:"Intas"}],dt:"fixed",tol:0},
+  {mol:"FLUDARABINE",skus:[{b:"FLUDOCYTE 50MG",s:50,mrp:12821,lp:3100,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"GEMCITABINE",skus:[{b:"GEMIBINE 1000MG",s:1000,mrp:5974.38,lp:1800,mfr:"Intas"},{b:"GEMIBINE 200MG",s:200,mrp:1388.53,lp:611.11,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"SERPLULIMAB",skus:[{b:"HETRONIFLY 100MG",s:100,mrp:23437,lp:17857.14,mfr:"Intas"}],dt:"fixed",tol:5},
+  {mol:"PERTUZUMAB",skus:[{b:"INTAZUMAB 420MG",s:420,mrp:25000,lp:19047,mfr:"Intas"}],dt:"fixed",hl:true,ldf:840,mdf:420,tol:5},
+  {mol:"RITUXIMAB",skus:[{b:"MABTAS 500MG",s:500,mrp:40690.99,lp:6800,mfr:"Intas"},{b:"MABTAS 100MG",s:100,mrp:7998.99,lp:2300,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"METHOTREXATE",skus:[{b:"MEREX-1000MG",s:1000,mrp:2450,lp:490,mfr:"Intas"},{b:"MEREX-500MG",s:500,mrp:1224.5,lp:245,mfr:"Intas"}],dt:"bsa",tol:3},
+  {mol:"OXALIPLATIN",skus:[{b:"OXITOZ 100MG",s:100,mrp:5319.66,lp:800,mfr:"Intas"},{b:"OXITOZ 50MG",s:50,mrp:2345.64,lp:450,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"NANOSOMAL PACLITAXEL",skus:[{b:"PACLIAQUALIP 100MG",s:100,mrp:10200.94,lp:5500,mfr:"Intas"},{b:"PACLIAQUALIP 30MG",s:30,mrp:3093.75,lp:1900,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"PEG LIPOSOMAL DOXORUBICIN",skus:[{b:"PEGADRIA 50MG",s:50,mrp:10406,lp:3000,mfr:"Intas"},{b:"PEGADRIA 20MG",s:20,mrp:3829.5,lp:1500,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"PEMETREXED",skus:[{b:"PEMMET 500MG",s:500,mrp:6201.8,lp:2864,mfr:"Intas"},{b:"PEMMET 100MG",s:100,mrp:1524.14,lp:704,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"DOCETAXEL",skus:[{b:"TAXOCARE 120MG",s:120,mrp:21617.58,lp:1900,mfr:"Intas"},{b:"TAXOCARE 80MG",s:80,mrp:10850.37,lp:1800,mfr:"Intas"},{b:"TAXOCARE 20MG",s:20,mrp:3011.81,lp:800,mfr:"Intas"}],dt:"bsa",tol:5},
+  {mol:"ZOLEDRONIC ACID",skus:[{b:"ZOLASTA 4MG",s:4,mrp:2555.36,lp:250,mfr:"Intas"}],dt:"fixed",tol:0},
+];
+
+let FORMULARY = JSON.parse(localStorage.getItem('oncodose_formulary') || 'null') || JSON.parse(JSON.stringify(DEFAULT_FORMULARY));
+function saveFormulary(){
+  localStorage.setItem('oncodose_formulary', JSON.stringify(FORMULARY));
+  if(window.FB?.user()) window.FB.saveFormulary(FORMULARY).then(ok=>{ if(ok) setSyncStatus('✓ Synced',true); });
+}
+function getMols(){ return FORMULARY.map(f=>f.mol).sort(); }
+function getFm(mol){ return FORMULARY.find(f=>f.mol===mol); }
+function getSKUs(mol){ const f=getFm(mol); return f?[...f.skus].sort((a,b)=>b.s-a.s):[]; }
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let pt={bsa:null,gfr:null};
+let mode='template'; // 'template' | 'patient'
+let phases=[];
+let savedRecords=JSON.parse(localStorage.getItem('oncodose_v4')||'[]');
+let pidCtr=0,didCtr=0;
+let printMode='hospital';
+let savedFilter='all';
+const DC_CLS=['dca','dcb','dcc','dcd','dce','dcf','dcg','dch'];
+const PC={chemo:'ph-chemo',surgery:'ph-surgery',rt:'ph-rt',ctrt:'ph-ctrt',recovery:'ph-recovery',followup:'ph-followup'};
+const ICONS={chemo:'💊',surgery:'🔪',rt:'☢️',ctrt:'⚡',recovery:'🛌',followup:'🔍'};
+const PBILL={chemo:'bc-blue',surgery:'bc-purple',rt:'bc-green-d',ctrt:'bc-amber-d',recovery:'bc-slate',followup:'bc-slate',grand:'bc-grand'};
+
+// ═══════════════════════════════════════════
+// FIREBASE AUTH + SYNC HELPERS
+// ═══════════════════════════════════════════
+function setSyncStatus(msg,ok){
+  const el=document.getElementById('fbSyncStatus');
+  if(!el)return;
+  el.textContent=msg;
+  el.style.color=ok===false?'#f87171':ok===true?'#4ade80':'rgba(255,255,255,0.4)';
+  if(msg) setTimeout(function(){el.textContent='';el.style.color='rgba(255,255,255,0.4)';},3000);
+}
+
+function showLoginModal(){
+  const m=document.getElementById('fbLoginModal');
+  if(m) m.style.display='flex';
+}
+function hideLoginModal(){
+  const m=document.getElementById('fbLoginModal');
+  if(m) m.style.display='none';
+}
+function fbClearError(){
+  const e=document.getElementById('fbError');
+  if(e) e.style.display='none';
+}
+function fbShowError(msg){
+  const e=document.getElementById('fbError');
+  if(e){e.textContent=msg;e.style.display='block';}
+}
+
+let fbIsRegister=false;
+function fbToggleRegister(){
+  fbIsRegister=!fbIsRegister;
+  document.getElementById('fbRegisterName').style.display=fbIsRegister?'block':'none';
+  document.getElementById('fbSubmitBtn').textContent=fbIsRegister?'Create Account':'Sign In';
+  document.getElementById('fbToggleMode').textContent=fbIsRegister?'Already have an account? Sign In':'Don\'t have an account? Register';
+  fbClearError();
+}
+
+async function fbLoginGoogle(){
+  const err=await window.FB?.signInGoogle();
+  if(err) fbShowError(err);
+}
+
+async function fbLoginEmail(){
+  const email=document.getElementById('fbEmail')?.value?.trim();
+  const pass=document.getElementById('fbPassword')?.value;
+  const name=document.getElementById('fbName')?.value?.trim();
+  if(!email||!pass){fbShowError('Please enter email and password.');return;}
+  document.getElementById('fbSubmitBtn').textContent='...';
+  const err=fbIsRegister
+    ? await window.FB?.registerEmail(email,pass,name)
+    : await window.FB?.signInEmail(email,pass);
+  if(err){
+    document.getElementById('fbSubmitBtn').textContent=fbIsRegister?'Create Account':'Sign In';
+    // Make error messages friendlier
+    const friendly={
+      'auth/user-not-found':'No account found with this email.',
+      'auth/wrong-password':'Incorrect password.',
+      'auth/email-already-in-use':'An account with this email already exists.',
+      'auth/weak-password':'Password should be at least 6 characters.',
+      'auth/invalid-email':'Please enter a valid email address.',
+      'auth/too-many-requests':'Too many attempts. Please try again later.',
+      'auth/network-request-failed':'Network error. Check your connection.',
+      'auth/popup-closed-by-user':'Sign-in popup was closed.',
+    };
+    const code=err.match(/\(([^)]+)\)/)?.[1]||'';
+    fbShowError(friendly[code]||err);
+  }
+}
+
+function fbContinueOffline(){
+  hideLoginModal();
+  showToast('Working offline — data saved locally only');
+}
+
+function fbSignIn(){ showLoginModal(); }
+function fbSignOut(){
+  window.FB?.signOut();
+  showToast('Signed out');
+}
+
+window._fbSignedIn = async function(user){
+  hideLoginModal();
+  // Update header
+  const bar=document.getElementById('fbAuthBar');
+  const si=document.getElementById('fbSignInBtn');
+  const so=document.getElementById('fbSignOutBtn');
+  const ui=document.getElementById('fbUserInfo');
+  if(bar) bar.style.display='flex';
+  if(si) si.style.display='none';
+  if(so) so.style.display='flex';
+  if(ui){
+    const name=(user.displayName||user.email||'').split(/[ @]/)[0];
+    const icon=user.providerData[0]?.providerId==='google.com'?'G ':'✉ ';
+    ui.textContent='☁ '+name;
+  }
+  setSyncStatus('Syncing…');
+  try{
+    const fbFm=await window.FB.loadFormulary();
+    if(fbFm&&fbFm.length){
+      FORMULARY=fbFm;
+      localStorage.setItem('oncodose_formulary',JSON.stringify(FORMULARY));
+      renderFormulary();renderBuilder();
+    } else if(FORMULARY.length) await window.FB.saveFormulary(FORMULARY);
+
+    const fbRecs=await window.FB.loadRecords();
+    if(fbRecs&&fbRecs.length){
+      const ids=new Set(fbRecs.map(function(r){return String(r.id);}));
+      const local=savedRecords.filter(function(r){return !ids.has(String(r.id));});
+      savedRecords=[...fbRecs,...local].sort(function(a,b){return b.id-a.id;});
+      localStorage.setItem('oncodose_v4',JSON.stringify(savedRecords));
+      renderSaved();
+    }
+    const fbIds2=new Set((fbRecs||[]).map(function(r){return String(r.id);}));
+    const up=savedRecords.filter(function(r){return !fbIds2.has(String(r.id));});
+    if(up.length) await Promise.all(up.map(function(r){return window.FB.saveRecord(r);}));
+    setSyncStatus('✓ Synced',true);
+  } catch(e){
+    console.error('Sync error:',e);
+    setSyncStatus('Sync failed',false);
+  }
+};
+
+window._fbSignedOut = function(){
+  const bar=document.getElementById('fbAuthBar');
+  const si=document.getElementById('fbSignInBtn');
+  const so=document.getElementById('fbSignOutBtn');
+  const ui=document.getElementById('fbUserInfo');
+  if(bar) bar.style.display='flex';
+  if(si) si.style.display='flex';
+  if(so) so.style.display='none';
+  if(ui) ui.textContent='';
+  setSyncStatus('');
+};
+
+// On load: show auth bar if Firebase configured, show login modal
+window.addEventListener('load',function(){
+  setTimeout(function(){
+    if(window.FB?.ready()){
+      const bar=document.getElementById('fbAuthBar');
+      if(bar) bar.style.display='flex';
+      // Show login modal if not signed in after 1s
+      setTimeout(function(){
+        if(!window.FB?.user()) showLoginModal();
+      },1000);
+    }
+  },600);
+});
+
+// ═══════════════════════════════════════════
+// MODE
+// ═══════════════════════════════════════════
+function setMode(m){
+  const prev=mode;
+  mode=m;
+  document.getElementById('modeTemplate').classList.toggle('active',m==='template');
+  document.getElementById('modePatient').classList.toggle('active',m==='patient');
+  document.getElementById('patientFields').style.display=m==='patient'?'block':'none';
+  document.getElementById('startDateRow').style.display=m==='patient'?'flex':'none';
+  document.getElementById('templateBsaNote').style.display=m==='template'?'block':'none';
+  document.getElementById('billTitle').textContent=m==='template'?'Cost Estimate (Template)':'Billing Summary';
+
+  if(m==='template'){
+    // Strip all date overrides when switching to template
+    phases.forEach(p=>{
+      p.phaseStartOverride='';
+      p.cycleOverrides=[];
+      if(p.surgeryDate) p.surgeryDate='';
+      if(p.dischargeDate) p.dischargeDate='';
+      if(p.lastFxDate) p.lastFxDate='';
+      if(p.visits) p.visits=p.visits.map(v=>({...v,actual:''}));
+    });
+    // Use standard BSA for estimates
+    if(!document.getElementById('height').value){
+      pt.bsa=1.73; pt.gfr=80;
+      document.getElementById('bsaVal').textContent='1.73*';
+      document.getElementById('gfrVal').textContent='80*';
+      document.getElementById('carboVal').textContent=Math.round(5*105)+' / '+Math.round(6*105)+' mg*';
+    }
+  }
+  renderBuilder();
+  recalcAll();
+}
+
+function clearAllDates(){
+  if(!confirm('Clear all date overrides? Auto-calculated dates will be used.'))return;
+  phases.forEach(p=>{
+    p.phaseStartOverride='';
+    p.cycleOverrides=[];
+    if('surgeryDate' in p) p.surgeryDate='';
+    if('dischargeDate' in p) p.dischargeDate='';
+    if('lastFxDate' in p) p.lastFxDate='';
+  });
+  recalcAll();
+  showToast('All date overrides cleared');
+}
+
+// ═══════════════════════════════════════════
+// PATIENT CALC
+// ═══════════════════════════════════════════
+function calcPt(){
+  const h=+document.getElementById('height').value;
+  const w=+document.getElementById('weight').value;
+  const age=+document.getElementById('age').value;
+  const sex=document.getElementById('sex').value;
+  const cr=+document.getElementById('creat').value;
+  if(h&&w){pt.bsa=Math.sqrt(h*w/3600);document.getElementById('bsaVal').textContent=pt.bsa.toFixed(2);}
+  else if(mode==='template'&&!h){pt.bsa=1.73;}
+  if(w&&age&&cr){
+    let gfr=((140-age)*w)/(72*cr);
+    if(sex==='F')gfr*=0.85;
+    pt.gfr=gfr;
+    document.getElementById('gfrVal').textContent=gfr.toFixed(1);
+    document.getElementById('carboVal').textContent=`${Math.round(5*(gfr+25))} / ${Math.round(6*(gfr+25))} mg`;
+  } else if(mode==='template'&&!w){pt.gfr=80;}
+  recalcAll();
+}
+
+// ═══════════════════════════════════════════
+// DOSE CALCULATION
+// ═══════════════════════════════════════════
+function calcDose(drug, phCycleNum){
+  const lm = drug.loadingMode||'loading_maintenance';
+  const isLoad = drug.hasLoading && (
+    lm==='loading_throughout' ||
+    (lm==='loading_maintenance' && phCycleNum===1)
+  );
+  const w = +document.getElementById('weight').value || (mode==='template'?60:0);
+  const bsa = pt.bsa || (mode==='template'?1.73:null);
+  const gfr = pt.gfr || (mode==='template'?80:null);
+  let base=0;
+  if(drug.dt==='bsa'){if(!bsa)return null;base=bsa*(drug.dpu||0);}
+  else if(drug.dt==='weight'){
+    if(!w)return null;
+    base=w*(isLoad?(drug.ldp||drug.dpu||0):(drug.mdp||drug.dpu||0));
+  }
+  else if(drug.dt==='auc'){if(!gfr)return null;base=(drug.auc||5)*(gfr+25);}
+  else if(drug.dt==='fixed'){
+    if(isLoad&&drug.ldf)base=drug.ldf;
+    else if(!isLoad&&drug.mdf)base=drug.mdf;
+    else base=drug.fd||0;
+  }
+  const cyc=drug.cycles[phCycleNum-1];
+  const pct=cyc&&!cyc.skip?(cyc.pct||100):100;
+  return base*(pct/100);
+}
+
+// ═══════════════════════════════════════════
+// VIAL OPTIMIZER
+// ═══════════════════════════════════════════
+function optVials(target,mol,tol,mfr){
+  const skus=getSKUs(mol);
+  if(!skus.length||target<=0)return null;
+  const minA=target*(1-tol/100);
+  let bA=null,bB=null;
+  const comboCount=(combo)=>combo.reduce(function(a,b){return a+b.n;},0);
+  function go(idx,combo,td,tm,tl){
+    if(td>=target){
+      var cnt=comboCount(combo);
+      if(!bA||td<bA.d||(td===bA.d&&tm<bA.m-1)||(td===bA.d&&Math.round(tm)===Math.round(bA.m)&&cnt<bA.cnt))
+        bA={d:td,c:[...combo],m:tm,l:tl,cnt:cnt};
+      return;
+    }
+    if(td>=minA){
+      var cnt2=comboCount(combo);
+      if(!bB||td>bB.d||(td===bB.d&&tm<bB.m)||(td===bB.d&&tm===bB.m&&cnt2<bB.cnt))
+        bB={d:td,c:[...combo],m:tm,l:tl,cnt:cnt2};
+    }
+    if(idx>=skus.length||combo.reduce((a,b)=>a+b.n,0)>=10)return;
+    const sk=skus[idx];
+    const mx=Math.min(Math.ceil((target-td)/sk.s)+1,8);
+    for(let n=0;n<=mx;n++){
+      combo.push({b:sk.b,s:sk.s,n,m:sk.mrp,l:sk.lp});
+      go(idx+1,combo,td+n*sk.s,tm+n*sk.mrp,tl+n*sk.lp);
+      combo.pop();
+    }
+  }
+  go(0,[],0,0,0);
+  if(!bA){
+    let rem=target,c=[],td=0,tm=0,tl=0;
+    for(const sk of skus){const n=Math.floor(rem/sk.s);if(n>0){c.push({b:sk.b,s:sk.s,n,m:sk.mrp,l:sk.lp});td+=n*sk.s;tm+=n*sk.mrp;tl+=n*sk.lp;rem-=n*sk.s;}}
+    if(rem>0.01){const sk=skus[skus.length-1];const ex=c.find(x=>x.b===sk.b);if(ex)ex.n++;else c.push({b:sk.b,s:sk.s,n:1,m:sk.mrp,l:sk.lp});td+=sk.s;tm+=sk.mrp;tl+=sk.lp;}
+    bA={d:td,c,m:tm,l:tl};
+  }
+  return{opt:bA,ud:bB,target,minA};
+}
+
+// ═══════════════════════════════════════════
+// TIMELINE / DATE CASCADE
+// ═══════════════════════════════════════════
+function gapToDays(val, unit){
+  if(!val)return 0;
+  if(unit==='weeks')return val*7;
+  if(unit==='months')return val*30;
+  return val;
+}
+
+function getPhaseCalDuration(p){
+  if(p.type==='chemo') return p.numCycles*(p.cycleLen||21);
+  if(p.type==='surgery'||p.type==='recovery') return p.actualEndDate ? 0 : (p.duration||1);
+  if(p.type==='rt'||p.type==='ctrt'){
+    if(p.lastFxDate) return 0;
+    return Math.ceil((p.fractions||30)/(p.fxPerWeek||5))*7;
+  }
+  if(p.type==='followup') return (p.durationMonths||24)*30;
+  return 0;
+}
+
+// Get actual end date of a phase
+function getPhaseEnd(p, phaseStart){
+  if(!phaseStart) return null;
+  if(p.type==='surgery'){
+    if(p.dischargeDate) return new Date(p.dischargeDate);
+    if(p.surgeryDate){const d=new Date(p.surgeryDate);d.setDate(d.getDate()+(p.duration||1)-1);return d;}
+    const d=new Date(phaseStart); d.setDate(d.getDate()+(p.duration||1)-1); return d;
+  }
+  if(p.type==='recovery'){
+    if(p.actualEndDate) return new Date(p.actualEndDate);
+    const durDays=p.durationUnit==='weeks'?(p.duration||6)*7:p.durationUnit==='months'?(p.duration||1)*30:(p.duration||1);
+    const d=new Date(phaseStart); d.setDate(d.getDate()+durDays-1); return d;
+  }
+  if(p.type==='rt'||p.type==='ctrt'){
+    if(p.lastFxDate) return new Date(p.lastFxDate);
+    const d=new Date(phaseStart); d.setDate(d.getDate()+Math.ceil((p.fractions||30)/(p.fxPerWeek||5))*7-1); return d;
+  }
+  if(p.type==='chemo'){
+    // Last cycle end
+    let lastCycStart = getLastCycleStart(p, phaseStart);
+    if(!lastCycStart) return null;
+    const d=new Date(lastCycStart); d.setDate(d.getDate()+(p.cycleLen||21)-1); return d;
+  }
+  if(p.type==='followup'){
+    const d=new Date(phaseStart); d.setDate(d.getDate()+(p.durationMonths||24)*30); return d;
+  }
+  return null;
+}
+
+function getLastCycleStart(p, phaseStart){
+  if(!phaseStart||p.type!=='chemo') return null;
+  // Cascade forward from last override found
+  return getCycleStart(p, phaseStart, p.numCycles-1);
+}
+
+// Main: get start date for a phase (with full cascade)
+function getPhaseStart(pi){
+  const sdStr=document.getElementById('startDate').value;
+  if(mode==='template') return null; // template uses relative display only
+  if(!sdStr) return null;
+  const baseDate = new Date(sdStr);
+  if(pi===0){
+    if(phases[0]?.phaseStartOverride) return new Date(phases[0].phaseStartOverride);
+    return baseDate;
+  }
+  // Cascade from previous phase
+  const prevPhase=phases[pi-1];
+  const prevStart=getPhaseStart(pi-1);
+  const prevEnd=getPhaseEnd(prevPhase, prevStart);
+  if(!prevEnd) return null;
+  const gap=gapToDays(prevPhase.gapVal||0, prevPhase.gapUnit||'days');
+  const nextAuto=new Date(prevEnd); nextAuto.setDate(prevEnd.getDate()+gap+1);
+  // Use surgeryDate as start override for surgery phases
+  if(phases[pi]?.type==='surgery'&&phases[pi]?.surgeryDate) return new Date(phases[pi].surgeryDate);
+  if(phases[pi]?.phaseStartOverride) return new Date(phases[pi].phaseStartOverride);
+  return nextAuto;
+}
+
+// Get cycle start date with cascade
+function getCycleStart(phase, phaseStart, ci){
+  if(!phaseStart) return null;
+  const cycleLen=phase.cycleLen||21;
+  // Find last override at or before ci
+  let baseDate=phaseStart;
+  let baseCi=0;
+  if(phase.cycleOverrides){
+    for(let i=ci;i>=0;i--){
+      if(phase.cycleOverrides[i]){
+        baseDate=new Date(phase.cycleOverrides[i]);
+        baseCi=i;
+        break;
+      }
+    }
+  }
+  const d=new Date(baseDate);
+  d.setDate(d.getDate()+(ci-baseCi)*cycleLen);
+  return d;
+}
+
+// ═══════════════════════════════════════════
+// TEMPLATE RELATIVE DISPLAY HELPERS
+// ═══════════════════════════════════════════
+function fmtDur(days){
+  if(!days||days<1) return '';
+  if(days<7) return days+'d';
+  const wks=Math.round(days/7);
+  if(days<28) return wks+' week'+(wks!==1?'s':'');
+  const mo=Math.floor(days/30);
+  const remWks=Math.round((days-mo*30)/7);
+  if(remWks===0) return mo+' month'+(mo!==1?'s':'');
+  return mo+' month'+(mo!==1?'s':'')+' '+remWks+' wk';
+}
+function fmtWkRange(startDay, endDay){
+  const sw=Math.ceil(startDay/7);
+  const ew=Math.ceil(endDay/7);
+  return sw===ew?'Week '+sw:'Week '+sw+'–'+ew;
+}
+function getPhaseDurationDays(p){
+  if(p.type==='chemo') return (p.numCycles||1)*(p.cycleLen||21);
+  if(p.type==='surgery') return p.duration||1;
+  if(p.type==='recovery'){
+    if(p.durationUnit==='weeks') return (p.duration||6)*7;
+    if(p.durationUnit==='months') return (p.duration||1)*30;
+    return p.duration||1;
+  }
+  if(p.type==='rt'||p.type==='ctrt') return Math.ceil((p.fractions||30)/(p.fxPerWeek||5))*7;
+  if(p.type==='followup') return (p.durationMonths||24)*30;
+  return 0;
+}
+function getPhaseStartDay(pi){
+  // Returns 1-based day offset from start of treatment (template mode)
+  let day=1;
+  for(let i=0;i<pi;i++){
+    day+=getPhaseDurationDays(phases[i]);
+    day+=gapToDays(phases[i].gapVal||0, phases[i].gapUnit||'days');
+  }
+  return day;
+}
+
+// ═══════════════════════════════════════════
+// PHASE MANAGEMENT
+// ═══════════════════════════════════════════
+function makeDrug(numCycles){
+  return{id:++didCtr,mol:'',dt:'bsa',dpu:0,auc:5,fd:0,ldp:null,mdp:null,ldf:null,mdf:null,
+    hasLoading:false,useLoading:false,loadingMode:'loading_maintenance',days:[],tol:5,useUd:false,mfr:'any',
+    cycles:Array.from({length:Math.max(numCycles,1)},()=>({pct:100,skip:false}))};
+}
+
+function makePhase(type){
+  const base={id:++pidCtr,type,gapVal:0,gapUnit:'weeks',gapLabel:'',cycleOverrides:[],collapsed:false,phaseStartOverride:''};
+  if(type==='chemo') return{...base,name:'Chemotherapy',cycleLen:21,numCycles:4,drugs:[]};
+  if(type==='surgery') return{...base,name:'Surgery',duration:1,surgeryDate:'',dischargeDate:'',mrpCost:0,lpCost:0,notes:''};
+  if(type==='rt') return{...base,name:'Radiotherapy',fractions:30,fxPerWeek:5,lastFxDate:'',mrpCost:0,lpCost:0,notes:''};
+  if(type==='ctrt') return{...base,name:'Chemoradiation',fractions:30,fxPerWeek:5,lastFxDate:'',mrpCost:0,lpCost:0,notes:'',drugs:[]};
+  if(type==='recovery') return{...base,name:'Recovery',duration:6,durationUnit:'weeks',actualEndDate:'',notes:'',consultCharge:0};
+  if(type==='followup') return{...base,name:'Follow-Up',durationMonths:24,intervalMonths:3,cascadeFromActual:true,consultCharge:0,visits:[]};
+  return base;
+}
+
+function addPhase(){
+  const type=document.getElementById('newPhaseType').value;
+  const p=makePhase(type);
+  if(type==='followup') p.visits=generateVisits(p);
+  phases.push(p);
+  renderBuilder();
+}
+function removePhase(id){phases=phases.filter(p=>p.id!==id);renderBuilder();recalcAll();}
+function movePhase(id,dir){
+  const i=phases.findIndex(p=>p.id===id);const j=i+dir;
+  if(j<0||j>=phases.length)return;
+  [phases[i],phases[j]]=[phases[j],phases[i]];
+  renderBuilder();recalcAll();
+}
+function togCollapse(id){const p=phases.find(p=>p.id===id);if(p)p.collapsed=!p.collapsed;renderBuilder();}
+function updPhase(id,f,v){
+  const p=phases.find(p=>p.id===id);if(!p)return;
+  const nums=['cycleLen','numCycles','gapVal','duration','fractions','fxPerWeek','mrpCost','lpCost','consultCharge','durationMonths','intervalMonths'];
+  p[f]=nums.includes(f)?+v:v;
+  if(f==='numCycles'&&p.drugs) p.drugs.forEach(d=>syncCyc(d,p.numCycles));
+  if(f==='durationMonths'||f==='intervalMonths'||f==='cascadeFromActual') p.visits=generateVisits(p);
+  renderBuilder();recalcAll();
+}
+function syncCyc(d,n){while(d.cycles.length<n)d.cycles.push({pct:100,skip:false});d.cycles=d.cycles.slice(0,n);}
+
+function addDrug(pid){const p=phases.find(p=>p.id===pid);if(!p||!p.drugs)return;p.drugs.push(makeDrug(p.numCycles||1));renderBuilder();}
+function removeDrug(pid,did){const p=phases.find(p=>p.id===pid);if(!p)return;p.drugs=p.drugs.filter(d=>d.id!==did);renderBuilder();recalcAll();}
+function onMolChange(pid,did,mol){
+  const p=phases.find(p=>p.id===pid);const d=p?.drugs.find(d=>d.id===did);if(!d)return;
+  d.mol=mol;const f=getFm(mol);
+  if(f){d.dt=f.dt;d.tol=f.tol;d.hasLoading=f.hl||false;d.useLoading=f.hl||false;
+    if(f.ldp)d.ldp=f.ldp;if(f.mdp)d.mdp=f.mdp;if(f.ldf)d.ldf=f.ldf;if(f.mdf)d.mdf=f.mdf;}
+  renderBuilder();recalcAll();
+}
+function updDrug(pid,did,f,v){
+  const p=phases.find(p=>p.id===pid);const d=p?.drugs.find(d=>d.id===did);if(!d)return;
+  const nums=['dpu','auc','fd','ldp','mdp','ldf','mdf','tol'];
+  d[f]=nums.includes(f)?+v:v;
+  renderBuilder();recalcAll();
+}
+function togDay(pid,did,day){
+  const p=phases.find(p=>p.id===pid);const d=p?.drugs.find(d=>d.id===did);if(!d)return;
+  const i=d.days.indexOf(day);if(i>=0)d.days.splice(i,1);else d.days.push(day);
+  d.days.sort((a,b)=>a-b);renderBuilder();recalcAll();
+}
+function togLoading(pid,did){
+  const p=phases.find(p=>p.id===pid);const d=p?.drugs.find(d=>d.id===did);if(!d)return;
+  const modes=['loading_maintenance','maintenance_only','loading_throughout'];
+  const cur=d.loadingMode||'loading_maintenance';
+  const idx=modes.indexOf(cur);
+  d.loadingMode=modes[(idx+1)%3];
+  d.useLoading=d.loadingMode!=='maintenance_only';
+  renderBuilder();recalcAll();
+}
+function setLoadingMode(pid,did,mode){
+  const p=phases.find(p=>p.id===pid);const d=p?.drugs.find(d=>d.id===did);if(!d)return;
+  d.loadingMode=mode;
+  d.useLoading=mode!=='maintenance_only';
+  renderBuilder();recalcAll();
+}
+function setPct(pid,did,ci,val){const p=phases.find(p=>p.id===pid);const d=p?.drugs.find(d=>d.id===did);if(!d)return;d.cycles[ci].pct=+val||100;renderBuilder();recalcAll();}
+function carryFwd(pid,did,ci){
+  const p=phases.find(p=>p.id===pid);const d=p?.drugs.find(d=>d.id===did);if(!d)return;
+  const pct=d.cycles[ci].pct;for(let i=ci+1;i<d.cycles.length;i++)d.cycles[i].pct=pct;
+  renderBuilder();recalcAll();
+}
+function togSkip(pid,did,ci){const p=phases.find(p=>p.id===pid);const d=p?.drugs.find(d=>d.id===did);if(!d)return;d.cycles[ci].skip=!d.cycles[ci].skip;renderBuilder();recalcAll();}
+function setUd(pid,did,v){const p=phases.find(p=>p.id===pid);const d=p?.drugs.find(d=>d.id===did);if(!d)return;d.useUd=v;renderBuilder();recalcAll();}
+function setCycleDate(pid,ci,v){
+  const p=phases.find(p=>p.id===pid);if(!p)return;
+  while(p.cycleOverrides.length<=ci)p.cycleOverrides.push('');
+  p.cycleOverrides[ci]=v;
+  recalcAll();
+}
+function clearCycleDates(pid){
+  const p=phases.find(p=>p.id===pid);if(!p)return;
+  p.cycleOverrides=[];
+  recalcAll();
+  showToast('Cycle date overrides cleared');
+}
+
+// FOLLOW-UP VISIT GENERATION
+function generateVisits(p){
+  const n=Math.floor((p.durationMonths||24)/(p.intervalMonths||3));
+  return Array.from({length:n},(_,i)=>({planned:'',actual:'',notes:''}));
+}
+function setVisitActual(pid,vi,val){
+  const p=phases.find(p=>p.id===pid);if(!p||!p.visits)return;
+  p.visits[vi].actual=val;
+  // Cascade subsequent visits if cascadeFromActual
+  if(p.cascadeFromActual&&val){
+    for(let i=vi+1;i<p.visits.length;i++){
+      if(!p.visits[i].actual){
+        const base=new Date(val);
+        base.setMonth(base.getMonth()+(i-vi)*(p.intervalMonths||3));
+        p.visits[i].planned=base.toISOString().split('T')[0];
+      }
+    }
+  }
+  renderBuilder();recalcAll();
+}
+
+// ═══════════════════════════════════════════
+// RENDER BUILDER
+// ═══════════════════════════════════════════
+function renderBuilder(){
+  const c=document.getElementById('phaseList');
+  if(!phases.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon">💊</div><div style="font-size:13px;">Select phase type and click <strong>+ Add Phase</strong></div></div>`;return;}
+  c.innerHTML=phases.map((p,pi)=>renderPhase(p,pi)).join('');
+}
+
+function renderPhase(p,pi){
+  const isFirst=pi===0,isLast=pi===phases.length-1;
+  const cycOff=phases.slice(0,pi).reduce((a,ph)=>a+(ph.numCycles||0),0);
+  const phCls=PC[p.type]||'ph-chemo';
+  const icon=ICONS[p.type]||'💊';
+  const typeLabel={chemo:'Chemotherapy',surgery:'Surgery',rt:'Radiotherapy',ctrt:'Chemoradiation',recovery:'Recovery',followup:'Follow-Up'}[p.type]||p.type;
+  const bcCls={chemo:'bc-chemo',surgery:'bc-surgery',rt:'bc-rt',ctrt:'bc-ctrt',recovery:'bc-recovery',followup:'bc-followup'}[p.type]||'bc-chemo';
+
+  let durStr='';
+  if(p.type==='chemo')durStr=`C${cycOff+1}–C${cycOff+p.numCycles} · ${p.numCycles}×${p.cycleLen}d`;
+  else if(p.type==='surgery'||p.type==='recovery')durStr=`${p.duration}${p.durationUnit||'d'}`;
+  else if(p.type==='rt'||p.type==='ctrt')durStr=`${p.fractions}fx · ${Math.ceil(p.fractions/p.fxPerWeek)}wks`;
+  else if(p.type==='followup')durStr=`${p.durationMonths}mo · every ${p.intervalMonths}mo`;
+
+  const bodyHtml=p.collapsed?'':renderPhaseBody(p,pi,cycOff);
+  return`<div class="phase-card">
+    <div class="phase-hdr" onclick="togCollapse(${p.id})">
+      <div class="ph-num ${phCls}">${pi+1}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <input class="ph-name-inp" value="${p.name}" onclick="event.stopPropagation()" onchange="updPhase(${p.id},'name',this.value)">
+          <span class="ph-type-badge ${bcCls}">${icon} ${typeLabel}</span>
+        </div>
+        <div class="ph-meta">${durStr}${p.gapVal>0?` · then ${p.gapVal}${p.gapUnit} gap`:''}</div>
+      </div>
+      <div style="display:flex;gap:3px;align-items:center;" onclick="event.stopPropagation()">
+        <button class="btn-ghost" onclick="movePhase(${p.id},-1)" ${isFirst?'disabled':''}>↑</button>
+        <button class="btn-ghost" onclick="movePhase(${p.id},1)" ${isLast?'disabled':''}>↓</button>
+        <button class="btn btn-sm btn-danger" onclick="removePhase(${p.id})">✕</button>
+        <span style="font-size:14px;color:var(--ink-muted);margin-left:2px;">${p.collapsed?'▸':'▾'}</span>
+      </div>
+    </div>
+    ${bodyHtml}
+  </div>`;
+}
+
+function renderPhaseBody(p,pi,cycOff){
+  // Phase start override field
+  const phStartFld=mode==='patient'?`<div class="row" style="margin-top:6px;">
+    <div class="fg"><label>Phase Start Date Override</label>
+      <input type="date" value="${p.phaseStartOverride||''}" class="${p.phaseStartOverride?'rm-date-ov mod':''}"
+        onchange="updPhase(${p.id},'phaseStartOverride',this.value);this.className=this.value?'rm-date-ov mod':'rm-date-ov'">
+    </div>
+  </div>`:''
+
+  let content='';
+  if(p.type==='chemo') content=renderChemoBody(p,cycOff);
+  else if(p.type==='surgery') content=renderSurgeryBody(p);
+  else if(p.type==='rt') content=renderRTBody(p,false);
+  else if(p.type==='ctrt') content=renderRTBody(p,true);
+  else if(p.type==='recovery') content=renderRecoveryBody(p);
+  else if(p.type==='followup') content=renderFollowUpBody(p,pi);
+
+  const gapHtml=`<div class="gap-blk">
+    <span style="font-size:16px;">⏸</span>
+    <div style="flex:1;">
+      <div style="font-size:10px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.4px;">Gap After This Phase</div>
+      <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+        <input type="number" value="${p.gapVal||0}" min="0" style="width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-size:12px;" onchange="updPhase(${p.id},'gapVal',this.value)">
+        <select onchange="updPhase(${p.id},'gapUnit',this.value)" style="padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-size:12px;background:#fff;">
+          <option value="days" ${p.gapUnit==='days'?'selected':''}>Days</option>
+          <option value="weeks" ${p.gapUnit==='weeks'?'selected':''}>Weeks</option>
+          <option value="months" ${p.gapUnit==='months'?'selected':''}>Months</option>
+        </select>
+        <input type="text" value="${p.gapLabel||''}" placeholder="Label e.g. Post-op recovery..." style="flex:1;min-width:120px;padding:4px 7px;border:1px solid var(--border);border-radius:5px;font-size:12px;" onchange="updPhase(${p.id},'gapLabel',this.value)">
+      </div>
+    </div>
+  </div>`;
+
+  return`<div class="phase-body">${phStartFld}${content}${gapHtml}</div>`;
+}
+
+function renderChemoBody(p,cycOff){
+  const drugs=(p.drugs||[]).map((d,di)=>renderDrug(p,d,di,cycOff,'chemo')).join('');
+  return`<div class="phase-settings" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="fg"><label>Cycle Length (days)</label><input type="number" value="${p.cycleLen}" min="1" max="56" onchange="updPhase(${p.id},'cycleLen',this.value)"></div>
+    <div class="fg"><label>No. of Cycles</label><input type="number" value="${p.numCycles}" min="1" max="24" onchange="updPhase(${p.id},'numCycles',this.value)"></div>
+    <div class="fg"><label>Course Cycles</label><input value="C${cycOff+1}–C${cycOff+p.numCycles}" readonly></div>
+  </div>
+  ${drugs}
+  <button class="add-btn" onclick="addDrug(${p.id})">+ Add Drug</button>`;
+}
+
+function renderSurgeryBody(p){
+  return`<div class="phase-settings" style="grid-template-columns:1fr 1fr;">
+    <div class="fg"><label>Duration (days)</label><input type="number" value="${p.duration||1}" min="1" onchange="updPhase(${p.id},'duration',this.value)"></div>
+    <div class="fg"><label>Notes</label><input type="text" value="${p.notes||''}" placeholder="e.g. MRM, Wide excision..." onchange="updPhase(${p.id},'notes',this.value)"></div>
+    <div class="fg"><label>Cost to Patient (MRP) ₹</label><input type="number" value="${p.mrpCost||0}" onchange="updPhase(${p.id},'mrpCost',this.value)"></div>
+    <div class="fg"><label>Hospital Cost (Landing) ₹</label><input type="number" value="${p.lpCost||0}" onchange="updPhase(${p.id},'lpCost',this.value)"></div>
+    ${mode==='patient'?`<div class="fg"><label>Actual End Date</label><input type="date" value="${p.actualEndDate||''}" class="${p.actualEndDate?'rm-date-ov mod':''}" onchange="updPhase(${p.id},'actualEndDate',this.value)"></div>`:''}
+  </div>`;
+}
+
+function renderRTBody(p,isCtrt){
+  const calDays=Math.ceil((p.fractions||30)/(p.fxPerWeek||5))*7;
+  const drugs=isCtrt?(p.drugs||[]).map((d,di)=>renderDrug(p,d,di,0,'ctrt')).join(''):'';
+  return`<div class="phase-settings" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="fg"><label>Total Fractions</label><input type="number" value="${p.fractions||30}" min="1" onchange="updPhase(${p.id},'fractions',this.value)"></div>
+    <div class="fg"><label>Fractions / Week</label><input type="number" value="${p.fxPerWeek||5}" min="1" max="7" onchange="updPhase(${p.id},'fxPerWeek',this.value)"></div>
+    <div class="fg"><label>Calendar Duration</label><input value="${calDays} days" readonly></div>
+    <div class="fg"><label>RT Cost to Patient ₹</label><input type="number" value="${p.mrpCost||0}" onchange="updPhase(${p.id},'mrpCost',this.value)"></div>
+    <div class="fg"><label>RT Hospital Cost ₹</label><input type="number" value="${p.lpCost||0}" onchange="updPhase(${p.id},'lpCost',this.value)"></div>
+    <div class="fg"><label>Notes</label><input type="text" value="${p.notes||''}" placeholder="60Gy/30fx IMRT..." onchange="updPhase(${p.id},'notes',this.value)"></div>
+    ${mode==='patient'?`<div class="fg"><label>Last Fraction Date</label><input type="date" value="${p.lastFxDate||''}" class="${p.lastFxDate?'rm-date-ov mod':''}" onchange="updPhase(${p.id},'lastFxDate',this.value)"></div>`:''}
+  </div>
+  ${isCtrt?`<div style="font-size:10px;font-weight:600;color:var(--accent);margin:7px 0 4px;text-transform:uppercase;letter-spacing:0.4px;">Concurrent Chemotherapy</div>${drugs}<button class="add-btn" onclick="addDrug(${p.id})">+ Add Concurrent Drug</button>`:''}`;
+}
+
+function renderRecoveryBody(p){
+  return`<div class="phase-settings" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="fg"><label>Duration</label><input type="number" value="${p.duration||6}" min="1" onchange="updPhase(${p.id},'duration',this.value)"></div>
+    <div class="fg"><label>Unit</label>
+      <select onchange="updPhase(${p.id},'durationUnit',this.value)">
+        <option value="days" ${p.durationUnit==='days'?'selected':''}>Days</option>
+        <option value="weeks" ${(p.durationUnit==='weeks'||!p.durationUnit)?'selected':''}>Weeks</option>
+        <option value="months" ${p.durationUnit==='months'?'selected':''}>Months</option>
+      </select>
+    </div>
+    <div class="fg"><label>Consult charge ₹</label><input type="number" value="${p.consultCharge||0}" onchange="updPhase(${p.id},'consultCharge',this.value)"></div>
+    <div class="fg" style="grid-column:1/-1"><label>Notes</label><input type="text" value="${p.notes||''}" placeholder="Post-op recovery, wound healing..." onchange="updPhase(${p.id},'notes',this.value)"></div>
+    ${mode==='patient'?`<div class="fg"><label>Actual End Date</label><input type="date" value="${p.actualEndDate||''}" class="${p.actualEndDate?'rm-date-ov mod':''}" onchange="updPhase(${p.id},'actualEndDate',this.value)"></div>`:''}
+  </div>`;
+}
+
+function renderFollowUpBody(p,pi){
+  return`<div class="phase-settings" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="fg"><label>Total Duration (months)</label><input type="number" value="${p.durationMonths||24}" min="1" onchange="updPhase(${p.id},'durationMonths',this.value)"></div>
+    <div class="fg"><label>Interval (months)</label><input type="number" value="${p.intervalMonths||3}" min="1" onchange="updPhase(${p.id},'intervalMonths',this.value)"></div>
+    <div class="fg"><label>Consult charge / visit ₹</label><input type="number" value="${p.consultCharge||0}" onchange="updPhase(${p.id},'consultCharge',this.value)"></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;padding:6px 9px;background:var(--amber-light);border-radius:5px;border:1px solid #f0b027;">
+    <div class="tog ${p.cascadeFromActual?'on':''}" onclick="updPhase(${p.id},'cascadeFromActual',!${p.cascadeFromActual})"></div>
+    <span style="font-size:11px;color:var(--amber);font-weight:500;">Cascade next visit from last actual visit date</span>
+  </div>
+  <p style="font-size:10px;color:var(--ink-muted);margin-top:7px;padding:5px 8px;background:var(--green-light);border-radius:5px;">
+    ✅ Enter actual visit dates on the <strong>Roadmap tab</strong> — each visit card has an inline date field.
+  </p>`;
+}
+
+function renderDrug(p,d,di,cycOff,context){
+  const dcCls=DC_CLS[di%DC_CLS.length];
+  const dtTag={bsa:'BSA',weight:'Weight',auc:'AUC',fixed:'Fixed'}[d.dt]||'?';
+  const dtCls={bsa:'tag-bsa',weight:'tag-wt',auc:'tag-auc',fixed:'tag-fix'}[d.dt]||'';
+  const numCyc=p.numCycles||1;
+  const isCtrt=context==='ctrt';
+
+  let doseIn='';
+  if(d.dt==='bsa')doseIn=`<div class="fg"><label>mg/m²</label><input type="number" value="${d.dpu||''}" step="0.1" onchange="updDrug(${p.id},${d.id},'dpu',this.value)"></div>`;
+  else if(d.dt==='weight')doseIn=`<div class="fg"><label>mg/kg Load</label><input type="number" value="${d.ldp||''}" step="0.1" onchange="updDrug(${p.id},${d.id},'ldp',this.value)"></div><div class="fg"><label>mg/kg Maint</label><input type="number" value="${d.mdp||''}" step="0.1" onchange="updDrug(${p.id},${d.id},'mdp',this.value)"></div>`;
+  else if(d.dt==='auc')doseIn=`<div class="fg"><label>AUC Target</label><input type="number" value="${d.auc||5}" min="1" max="8" step="0.5" onchange="updDrug(${p.id},${d.id},'auc',this.value)"></div>`;
+  else if(d.dt==='fixed'){
+    if(d.hasLoading)doseIn=`<div class="fg"><label>Loading mg</label><input type="number" value="${d.ldf||''}" onchange="updDrug(${p.id},${d.id},'ldf',this.value)"></div><div class="fg"><label>Maint mg</label><input type="number" value="${d.mdf||''}" onchange="updDrug(${p.id},${d.id},'mdf',this.value)"></div>`;
+    else doseIn=`<div class="fg"><label>Fixed mg</label><input type="number" value="${d.fd||''}" onchange="updDrug(${p.id},${d.id},'fd',this.value)"></div>`;
+  }
+
+  const lm=d.loadingMode||'loading_maintenance';
+  const loadToggle=d.hasLoading?`<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--amber-light);border-radius:6px;border:1px solid #f0b027;margin-bottom:6px;">
+    <span style="font-size:10px;font-weight:600;color:var(--amber);white-space:nowrap;">Dosing:</span>
+    <div style="display:flex;gap:3px;flex:1;">
+      <button onclick="setLoadingMode(${p.id},${d.id},'loading_maintenance')" style="flex:1;padding:4px 6px;border-radius:5px;border:1px solid ${lm==='loading_maintenance'?'var(--amber)':'var(--border)'};background:${lm==='loading_maintenance'?'var(--amber)':'#fff'};color:${lm==='loading_maintenance'?'#fff':'var(--ink-muted)'};font-size:10px;cursor:pointer;font-family:inherit;font-weight:${lm==='loading_maintenance'?'600':'400'};">⚡ Load→Maint</button>
+      <button onclick="setLoadingMode(${p.id},${d.id},'loading_throughout')" style="flex:1;padding:4px 6px;border-radius:5px;border:1px solid ${lm==='loading_throughout'?'var(--amber)':'var(--border)'};background:${lm==='loading_throughout'?'var(--amber)':'#fff'};color:${lm==='loading_throughout'?'#fff':'var(--ink-muted)'};font-size:10px;cursor:pointer;font-family:inherit;font-weight:${lm==='loading_throughout'?'600':'400'};">⚡⚡ Load all</button>
+      <button onclick="setLoadingMode(${p.id},${d.id},'maintenance_only')" style="flex:1;padding:4px 6px;border-radius:5px;border:1px solid ${lm==='maintenance_only'?'var(--amber)':'var(--border)'};background:${lm==='maintenance_only'?'var(--amber)':'#fff'};color:${lm==='maintenance_only'?'#fff':'var(--ink-muted)'};font-size:10px;cursor:pointer;font-family:inherit;font-weight:${lm==='maintenance_only'?'600':'400'};">🔄 Maint only</button>
+    </div>
+  </div>`:'';
+
+  const cycLen=isCtrt?Math.ceil((p.fractions||30)/(p.fxPerWeek||5))*7:(p.cycleLen||21);
+  const chips=Array.from({length:Math.min(cycLen,42)},(_,i)=>{
+    const dy=i+1;const sel=d.days.includes(dy);
+    return`<div class="dc ${sel?'on':''}" onclick="togDay(${p.id},${d.id},${dy})" title="Day ${dy}">${dy}</div>`;
+  }).join('');
+
+  // Vial result for cycle 1
+  const dose1=calcDose(d,1);
+  const vr=dose1&&d.mol?optVials(dose1,d.mol,d.tol,d.mfr):null;
+  const actVr=d.useUd&&vr?.ud?vr.ud:vr?.opt;
+  let vialHtml='';
+  if(vr&&actVr){
+    const combo=actVr.c.filter(c=>c.n>0).map(c=>`${c.n}× ${c.b} (${c.s}mg)`).join(' + ');
+    const waste=actVr.d-dose1;
+    vialHtml=`<div class="vial-box">
+      <div style="font-size:10px;font-weight:600;color:var(--blue);margin-bottom:4px;">
+        Calc: <span style="font-family:'JetBrains Mono',monospace;">${dose1.toFixed(1)} mg</span>
+        ${d.dt==='bsa'?'<span style="color:var(--ink-muted);font-weight:400;">(BSA '+((pt.bsa||1.73).toFixed(2))+' × '+d.dpu+' mg/m²)</span>':''}
+        ${d.dt==='weight'?'<span style="color:var(--ink-muted);font-weight:400;">('+document.getElementById('weight').value+'kg × '+(d.useLoading&&d.hasLoading&&!0?d.ldp:d.mdp)+' mg/kg)</span>':''}
+        ${d.dt==='auc'?'<span style="color:var(--ink-muted);font-weight:400;">(AUC '+d.auc+' × (GFR '+(pt.gfr||80).toFixed(0)+'+25))</span>':''}
+        ${d.dt==='fixed'?'<span style="color:var(--ink-muted);font-weight:400;">(fixed dose)</span>':''}
+      </div>
+      <div class="vial-combo">${combo||'—'}</div>
+      <div style="font-size:10px;color:${waste>=0?'var(--green)':'var(--amber)'};">${actVr.d.toFixed(1)}mg dispensed vs ${dose1.toFixed(1)}mg calculated (${waste>=0?'+':''}${waste.toFixed(1)}mg ${waste>=0?'overage':'underdose'})</div>
+      ${vr.ud&&!d.useUd?`<div class="ud-flag">⚠️<div>Underdose: ${vr.ud.c.filter(c=>c.n>0).map(c=>`${c.n}×${c.b}`).join('+')}=${vr.ud.d.toFixed(1)}mg (−${((dose1-vr.ud.d)/dose1*100).toFixed(1)}%) saves ₹${fmt(actVr.m-vr.ud.m)}<br><button class="btn btn-sm" style="margin-top:3px;background:var(--amber);color:#fff" onclick="setUd(${p.id},${d.id},true)">Use</button></div></div>`:''}
+      ${d.useUd?`<div class="ud-flag">⚠️ Using underdose — <button class="btn btn-sm btn-outline" style="font-size:10px" onclick="setUd(${p.id},${d.id},false)">Revert</button></div>`:''}
+      <div class="cost-mini">
+        <div class="cm mrp"><div class="cm-label">MRP/session</div><div class="cm-val">₹${fmt(actVr.m)}</div></div>
+        <div class="cm lp"><div class="cm-label">Landing/session</div><div class="cm-val">₹${fmt(actVr.l)}</div></div>
+      </div>
+    </div>`;
+  }
+
+  // Cycle table with vials per cycle
+  let cycTable='';
+  if(!isCtrt&&numCyc>0){
+    const rows=d.cycles.map((cyc,ci)=>{
+      const phC=ci+1,crC=cycOff+ci+1;
+      const isLoad=d.hasLoading&&(d.loadingMode==='loading_throughout'||(d.loadingMode==='loading_maintenance'&&phC===1));
+      const dose=calcDose(d,phC);
+      const vrc=dose&&d.mol?optVials(dose,d.mol,d.tol,d.mfr):null;
+      const actC=d.useUd&&vrc?.ud?vrc.ud:vrc?.opt;
+      const isRed=cyc.pct!==100,isSk=cyc.skip;
+      const comboStr=actC?actC.c.filter(c=>c.n>0).map(c=>`${c.n}×${c.b.replace(/[A-Z]+\s/g,'').substring(0,12)}`).join('+'):'—';
+      return`<tr class="${isSk?'row-skip':''}">
+        <td><span style="font-family:'JetBrains Mono',monospace;font-size:10px">C${phC}</span><span style="font-size:9px;color:var(--ink-muted)">(C${crC})</span>
+          ${isLoad?'<span style="font-size:8px;background:var(--amber);color:#fff;padding:1px 3px;border-radius:2px;font-family:monospace">L</span>':''}
+          ${!isLoad&&d.hasLoading&&d.useLoading?'<span style="font-size:8px;background:var(--green);color:#fff;padding:1px 3px;border-radius:2px;font-family:monospace">M</span>':''}
+        </td>
+        <td><div class="pct-btns">
+          ${[100,75,50,25].map(pv=>`<div class="pb ${cyc.pct===pv&&!isSk?'on':''}" onclick="setPct(${p.id},${d.id},${ci},${pv})">${pv}</div>`).join('')}
+          <input class="pi" type="number" value="${cyc.pct}" min="0" max="200" onchange="setPct(${p.id},${d.id},${ci},this.value)">
+          <div class="pb" onclick="carryFwd(${p.id},${d.id},${ci})" title="Apply to all later cycles" style="font-size:9px">→all</div>
+        </div></td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:10px;${isRed&&!isSk?'color:var(--amber);font-weight:600;':''}">${isSk?'—':dose?dose.toFixed(1):'—'}</td>
+        <td style="font-size:10px;color:var(--ink-muted);font-family:'JetBrains Mono',monospace">${isSk?'—':comboStr}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:10px">${isSk||!actC?'—':'₹'+fmt(actC.m)}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green)">${isSk||!actC?'—':'₹'+fmt(actC.l)}</td>
+        <td><button class="sk-btn ${isSk?'on':''}" onclick="togSkip(${p.id},${d.id},${ci})">${isSk?'⛔':'Skip'}</button></td>
+      </tr>`;
+    }).join('');
+    cycTable=`<details style="margin-top:6px;"><summary>Per-Cycle Dose, Vials & Cost (${numCyc} cycles)</summary>
+      <table class="cyc-tbl" style="margin-top:5px;">
+        <thead><tr><th>Cycle</th><th>Dose %</th><th>mg</th><th>Vials</th><th>MRP</th><th>Landing</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </details>`;
+  }
+
+  const mols=getMols();
+  // Get available manufacturers for this molecule
+  const fmEntry=getFm(d.mol);
+  const mfrs=fmEntry?[...new Set(fmEntry.skus.map(sk=>sk.mfr||'Unknown').filter(Boolean))]:[];
+  const mfrOptions=mfrs.length?`<option value="any">Any — cheapest</option>${mfrs.map(mf=>`<option value="${mf}" ${d.mfr===mf?'selected':''}>${mf}</option>`).join('')}`:'<option value="any">Any</option>';
+  return`<div class="drug-entry">
+    <div class="drug-hdr">
+      <div class="drug-name">
+        <span style="width:8px;height:8px;border-radius:50%;display:inline-block" class="${dcCls}"></span>
+        ${d.mol||'<em style="color:var(--ink-muted);font-weight:400;font-size:12px">Select molecule...</em>'}
+        <span class="dt-tag ${dtCls}">${dtTag}</span>
+        ${d.mfr&&d.mfr!=='any'?`<span style="font-size:9px;background:var(--blue-light);color:var(--blue);padding:2px 6px;border-radius:8px;font-family:'JetBrains Mono',monospace;">${d.mfr}</span>`:''}
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="removeDrug(${p.id},${d.id})">✕</button>
+    </div>
+    <div class="row">
+      <div class="fg" style="flex:2"><label>Molecule</label>
+        <select onchange="onMolChange(${p.id},${d.id},this.value)">
+          <option value="">-- Select --</option>
+          ${mols.map(m=>`<option value="${m}" ${d.mol===m?'selected':''}>${m}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg"><label>Dose Type</label>
+        <select onchange="updDrug(${p.id},${d.id},'dt',this.value)">
+          <option value="bsa" ${d.dt==='bsa'?'selected':''}>BSA (mg/m²)</option>
+          <option value="weight" ${d.dt==='weight'?'selected':''}>Weight (mg/kg)</option>
+          <option value="auc" ${d.dt==='auc'?'selected':''}>AUC</option>
+          <option value="fixed" ${d.dt==='fixed'?'selected':''}>Fixed (mg)</option>
+        </select>
+      </div>
+    </div>
+    ${mfrs.length>1?`<div class="row"><div class="fg"><label>Manufacturer (locks vial optimizer to selected brand)</label>
+      <select onchange="updDrug(${p.id},${d.id},'mfr',this.value)">${mfrOptions}</select>
+    </div></div>`:''}
+    <div class="row">${doseIn}</div>
+    ${loadToggle}
+    <div style="font-size:10px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;">Administration Days</div>
+    <div class="day-chips">${chips}</div>
+    <div class="tol-row">
+      <label>Underdose tolerance:</label>
+      <input type="range" min="0" max="15" step="0.5" value="${d.tol}" oninput="updDrug(${p.id},${d.id},'tol',this.value);document.getElementById('tv-${d.id}').textContent=this.value+'%'">
+      <span class="tol-val" id="tv-${d.id}">${d.tol}%</span>
+    </div>
+    ${vialHtml}
+    ${cycTable}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// ROADMAP
+// ═══════════════════════════════════════════
+function updateRoadmap(){
+  const c=document.getElementById('roadmapContent');
+  // Show/hide clear all dates button in patient mode
+  const actEl=document.getElementById('roadmapActions');
+  if(actEl){
+    const hasAnyDate=phases.some(p=>p.phaseStartOverride||(p.cycleOverrides&&p.cycleOverrides.some(v=>v))||p.surgeryDate||p.dischargeDate||p.lastFxDate);
+    actEl.innerHTML=mode==='patient'
+      ? (hasAnyDate?'<button class="btn btn-sm btn-outline" style="color:var(--accent)" onclick="clearAllDates()">🗑 Clear all date overrides</button>':'')+
+        '<button class="btn btn-sm btn-accent" onclick="showPrintMenu()">🖨 Print Roadmap</button>'
+      : '<button class="btn btn-sm btn-accent" onclick="showPrintMenu()">🖨 Print Roadmap</button>';
+  }
+  if(!phases.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><div>Add phases to see roadmap.</div></div>`;return;}
+  let html='';
+  phases.forEach((p,pi)=>{
+    const phCls=PC[p.type]||'ph-chemo';
+    const icon=ICONS[p.type]||'💊';
+    const phStart=getPhaseStart(pi);
+    const phEnd=phStart?getPhaseEnd(p,phStart):null;
+
+    html+=`<div class="rm-phase-band">`;
+    // Phase header
+    const phEndStr=phEnd?phEnd.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}):'';
+    const phStartStr=phStart?phStart.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}):'';
+    // Template: relative week + duration display
+    const tmplStartDay=mode==='template'?getPhaseStartDay(pi):0;
+    const tmplDurDays=mode==='template'?getPhaseDurationDays(p):0;
+    const tmplEndDay=tmplStartDay+tmplDurDays-1;
+    const tmplWkRange=mode==='template'?fmtWkRange(tmplStartDay,tmplEndDay):'';
+    const tmplDur=mode==='template'?fmtDur(tmplDurDays):'';
+    html+=`<div class="rm-phase-hdr">
+      <span class="${phCls}" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">${pi+1}</span>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+          <span>${icon} ${p.name}</span>
+          ${mode==='template'
+            ? `<span class="pill" style="background:var(--blue-light);border-color:var(--blue);color:var(--blue);">${tmplWkRange} · ${tmplDur}</span>`
+            : phStartStr?`<span class="pill">${phStartStr}${phEndStr?' → '+phEndStr:''}</span>`:''
+          }
+          ${p.phaseStartOverride&&mode==='patient'?`<span class="pill" style="background:var(--amber-light);border-color:var(--amber);color:var(--amber);">📌 start overridden</span>`:''}
+        </div>
+        ${mode==='patient'?`<div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;align-items:center;">
+          ${p.type!=='surgery'?`<div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:10px;color:var(--ink-muted);font-weight:600;">START:</span>
+            <input type="date" value="${p.phaseStartOverride||(phStart?phStart.toISOString().split('T')[0]:'')}"
+              class="rm-date-ov ${p.phaseStartOverride?'mod':''}"
+              title="Override phase start date (auto-calculated: ${phStart?phStart.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'not set'})"
+              onchange="updPhase(${p.id},'phaseStartOverride',this.value);this.classList.toggle('mod',!!this.value);recalcAll()">
+            ${p.type==='chemo'&&p.cycleOverrides&&p.cycleOverrides.some(v=>v)?`<button onclick="clearCycleDates(${p.id})" title="Clear all cycle date overrides" style="padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:#fff;cursor:pointer;font-size:10px;color:var(--accent);white-space:nowrap;">🗑 Clear dates</button>`:''}
+          </div>`:''}
+          ${(p.type==='rt'||p.type==='ctrt')?`<div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:10px;color:var(--ink-muted);font-weight:600;">LAST FX:</span>
+            <input type="date" value="${p.lastFxDate||(phEnd?phEnd.toISOString().split('T')[0]:'')}"
+              class="rm-date-ov ${p.lastFxDate?'mod':''}"
+              title="Last fraction date (planned end: ${phEnd?phEnd.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'not set'})"
+              onchange="updPhase(${p.id},'lastFxDate',this.value);this.classList.toggle('mod',!!this.value);recalcAll()">
+          </div>`:''}
+          ${p.type==='surgery'?`<div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:10px;color:var(--ink-muted);font-weight:600;">🔪 SURGERY DATE:</span>
+            <input type="date" value="${p.surgeryDate||(phStart?phStart.toISOString().split('T')[0]:'')}"
+              class="rm-date-ov ${p.surgeryDate?'mod':''}"
+              title="Actual surgery date (planned: ${phStart?phStart.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'not set'})"
+              onchange="updPhase(${p.id},'surgeryDate',this.value);this.classList.toggle('mod',!!this.value);recalcAll()">
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:10px;color:var(--ink-muted);font-weight:600;">🏥 DISCHARGE DATE:</span>
+            <input type="date" value="${p.dischargeDate||(phEnd?phEnd.toISOString().split('T')[0]:'')}"
+              class="rm-date-ov ${p.dischargeDate?'mod':''}"
+              title="Discharge date (planned: ${phEnd?phEnd.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'not set'})"
+              onchange="updPhase(${p.id},'dischargeDate',this.value);this.classList.toggle('mod',!!this.value);recalcAll()">
+          </div>`:''}
+          ${p.type==='recovery'?`<div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:10px;color:var(--ink-muted);font-weight:600;">END:</span>
+            <input type="date" value="${p.actualEndDate||''}"
+              class="rm-date-ov ${p.actualEndDate?'mod':''}"
+              title="Actual end of recovery"
+              onchange="updPhase(${p.id},'actualEndDate',this.value);this.classList.toggle('mod',!!this.value);recalcAll()">
+          </div>`:''}
+        </div>`:''}
+      </div>
+    </div>`;
+
+    if(p.type==='chemo') html+=renderRoadmapChemo(p,pi,phStart);
+    else if(p.type==='rt'||p.type==='ctrt') html+=renderRoadmapRT(p,phStart);
+    else if(p.type==='followup') html+=renderRoadmapFollowUp(p,pi,phStart);
+    else{
+      // Surgery / Recovery — event block
+      const bg={surgery:'background:#6c3483',recovery:'background:#566573'}[p.type]||'background:#566573';
+      if(mode==='template'){
+        // Template: show duration and week range only
+        const durTxt=fmtDur(tmplDurDays);
+        html+=`<div class="rm-scroll"><div class="rm-grid"><div class="event-band" style="${bg};color:#fff;min-width:160px;">
+          <div style="font-size:20px;margin-bottom:4px;">${icon}</div>
+          <div style="font-size:11px;font-weight:600;text-align:center;">${p.name}</div>
+          ${p.notes?`<div style="font-size:9px;opacity:0.7;margin-top:3px;text-align:center;">${p.notes}</div>`:''}
+          <div style="font-size:10px;background:rgba(255,255,255,0.15);padding:3px 8px;border-radius:4px;margin-top:6px;text-align:center;">
+            ${tmplWkRange}<br>${durTxt}
+          </div>
+        </div></div></div>`;
+      } else {
+        let startLabel=phStart?phStart.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'—';
+        let endLabel=phEnd?phEnd.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'—';
+        html+=`<div class="rm-scroll"><div class="rm-grid"><div class="event-band" style="${bg};color:#fff;min-width:160px;">
+          <div style="font-size:20px;margin-bottom:4px;">${icon}</div>
+          <div style="font-size:11px;font-weight:600;text-align:center;">${p.name}</div>
+          ${p.notes?`<div style="font-size:9px;opacity:0.7;margin-top:2px;text-align:center;">${p.notes}</div>`:''}
+          <div style="font-size:9px;opacity:0.8;margin-top:6px;display:flex;flex-direction:column;gap:3px;width:100%;">
+            ${p.type==='surgery'?`
+              <div style="display:flex;justify-content:space-between;"><span>Surgery:</span><span>${p.surgeryDate?new Date(p.surgeryDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):startLabel}</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Discharge:</span><span>${p.dischargeDate?new Date(p.dischargeDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):endLabel}</span></div>
+              ${p.surgeryDate&&p.dischargeDate?`<div style="font-size:8px;opacity:0.6;margin-top:2px;">${Math.round((new Date(p.dischargeDate)-new Date(p.surgeryDate))/(1000*60*60*24))+1} days</div>`:''}
+            `:`
+              <div style="display:flex;justify-content:space-between;"><span>Start:</span><span>${startLabel}</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>End:</span><span>${p.actualEndDate?new Date(p.actualEndDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):endLabel}${p.actualEndDate?' 📌':''}</span></div>
+              <div style="font-size:8px;opacity:0.6;margin-top:2px;">${p.duration||''} ${p.durationUnit||'days'}</div>
+            `}
+          </div>
+        </div></div></div>`;
+      }
+    }
+
+    // Gap band
+    if(p.gapVal>0){
+      const gapDays=gapToDays(p.gapVal,p.gapUnit);
+      let gapStr=`${p.gapVal} ${p.gapUnit}`;
+      let gapInfo='';
+      if(mode==='template'){
+        // Show relative week position for gap
+        const gapStartDay=tmplEndDay+1;
+        const gapEndDay=gapStartDay+gapDays-1;
+        gapInfo=fmtWkRange(gapStartDay,gapEndDay)+' · '+fmtDur(gapDays);
+      } else if(phEnd){
+        const gs=new Date(phEnd);gs.setDate(gs.getDate()+1);
+        const ge=new Date(gs);ge.setDate(gs.getDate()+gapDays-1);
+        gapInfo=`${gs.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})} → ${ge.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}`;
+      }
+      html+=`<div class="gap-band">
+        <span style="font-size:16px;">⏸</span>
+        <div><div style="font-size:11px;font-weight:600;color:var(--ink-soft)">${p.gapLabel||'Gap'} — ${gapStr}</div>
+        ${gapInfo?`<div style="font-size:10px;color:var(--ink-muted);font-family:'JetBrains Mono',monospace">${gapInfo}</div>`:''}
+        </div>
+      </div>`;
+    }
+    html+=`</div>`;
+  });
+
+  // Drug legend
+  const allDrugs=phases.flatMap(p=>p.drugs||[]);
+  if(allDrugs.length){
+    html+=`<div style="display:flex;flex-wrap:wrap;gap:5px;padding:8px 0;">`;
+    allDrugs.forEach((d,i)=>{if(d.mol)html+=`<div class="pill"><span class="${DC_CLS[i%DC_CLS.length]}" style="width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:2px;"></span>${d.mol}</div>`;});
+    html+=`</div>`;
+  }
+  // Template: show total course duration summary
+  if(mode==='template'&&phases.length){
+    const totalDays=phases.reduce((acc,p)=>acc+getPhaseDurationDays(p)+gapToDays(p.gapVal||0,p.gapUnit||'days'),0);
+    const totalWks=Math.ceil(totalDays/7);
+    const totalMo=Math.floor(totalDays/30);
+    const remWks=Math.round((totalDays-totalMo*30)/7);
+    const totalStr=totalMo>0?(totalMo+' months'+(remWks>0?' '+remWks+' weeks':'')):totalWks+' weeks';
+    html+=`<div style="margin-top:10px;padding:10px 14px;background:var(--ink);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-family:'Playfair Display',serif;font-size:13px;">Total Treatment Duration</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;">Week 1–${totalWks} · ${totalStr}</span>
+    </div>`;
+  }
+  c.innerHTML=`<div class="rm-wrap">${html}</div>`;
+}
+
+function renderRoadmapChemo(p,pi,phStart){
+  const drugColors={};(p.drugs||[]).forEach((d,di)=>drugColors[d.id]=DC_CLS[di%DC_CLS.length]);
+  const txDays=new Set((p.drugs||[]).flatMap(d=>d.days));
+  let html=`<div class="rm-scroll"><div class="rm-grid">`;
+  for(let ci=0;ci<p.numCycles;ci++){
+    const cycStart=phStart?getCycleStart(p,phStart,ci):null;
+    const hasOv=p.cycleOverrides&&p.cycleOverrides[ci];
+    // Template: calculate week range for this cycle
+    const cycStartDay=mode==='template'?(getPhaseStartDay(pi)+ci*(p.cycleLen||21)):0;
+    const cycEndDay=cycStartDay+(p.cycleLen||21)-1;
+    const cycRelLabel=mode==='template'?fmtWkRange(cycStartDay,cycEndDay):'';
+    html+=`<div class="rm-cyc-blk">
+      <div class="rm-cyc-lbl ${hasOv?'mod':''}">
+        C${ci+1}${p.drugs.some(d=>d.loadingMode==='loading_throughout')?' ⚡⚡':p.drugs.some(d=>d.loadingMode==='loading_maintenance'&&d.hasLoading)&&ci===0?' ⚡':''}
+        ${p.drugs.length&&p.drugs.every(d=>d.cycles[ci]?.skip)?' ⛔':''}
+        ${hasOv&&mode==='patient'?' 📌':''}
+        ${mode==='template'?`<div style="font-size:8px;color:var(--ink-muted);font-family:'JetBrains Mono',monospace;margin-top:1px;">${cycRelLabel}</div>`:''}
+      </div>
+      <div class="rm-days">`;
+    for(let day=1;day<=p.cycleLen;day++){
+      const isTx=txDays.has(day);
+      let dStr='';
+      if(mode==='patient'&&cycStart){
+        const dd=new Date(cycStart);dd.setDate(cycStart.getDate()+day-1);
+        dStr=dd.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+      }
+      const dots=(p.drugs||[]).filter(d=>d.days.includes(day)).map(d=>{
+        const isLoad=d.hasLoading&&(d.loadingMode==='loading_throughout'||(d.loadingMode==='loading_maintenance'&&ci===0));
+        const cyc=d.cycles[ci];const isRed=cyc&&!cyc.skip&&cyc.pct!==100;
+        return`<div class="rm-dot ${drugColors[d.id]}" title="${d.mol}${isLoad?' ⚡':''}${isRed?` (${cyc.pct}%)`:''}">
+          ${d.mol.substring(0,5)}${isLoad?'⚡':''}${isRed?` ${cyc.pct}%`:''}
+        </div>`;
+      }).join('');
+      html+=`<div class="rm-day">
+        <div class="rm-day-hdr ${isTx?'tx':''}">D${day}<div class="rm-day-date">${dStr}</div></div>
+        <div class="rm-dots">${dots}</div>
+      </div>`;
+    }
+    html+=`</div>`;
+    if(mode==='patient'){
+      const calcDateStr=cycStart?cycStart.toISOString().split('T')[0]:'';
+      html+=`<input type="date" class="rm-date-ov ${hasOv?'mod':''}"
+        value="${hasOv||calcDateStr}"
+        title="Cycle ${ci+1} — calculated: ${cycStart?cycStart.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'not set'}${hasOv?' | overridden: '+new Date(hasOv).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):''}"
+        onchange="if(this.value==='${calcDateStr}'&&!'${hasOv}'){return;}setCycleDate(${p.id},${ci},this.value);this.classList.toggle('mod',this.value!=='${calcDateStr}');recalcAll()">`;
+    }
+    html+=`</div>`;
+  }
+  html+=`</div></div>`;
+  return html;
+}
+
+function renderRoadmapRT(p,phStart){
+  const weeks=Math.ceil((p.fractions||30)/(p.fxPerWeek||5));
+  const isCtrt=p.type==='ctrt';
+  const drugColors={};(p.drugs||[]).forEach((d,di)=>drugColors[d.id]=DC_CLS[di%DC_CLS.length]);
+  let fxCount=0;
+  let html=`<div class="rm-scroll"><div style="display:inline-block;">
+    <div class="rt-band">
+      <div style="font-size:10px;font-weight:600;margin-bottom:7px;">☢️ ${p.name} — ${p.fractions}fx / ${weeks}wks${p.notes?` · ${p.notes}`:''}</div>
+      <div style="display:flex;gap:3px;flex-wrap:nowrap;">`;
+  for(let w=0;w<weeks;w++){
+    let wStart=null;if(phStart){wStart=new Date(phStart);wStart.setDate(phStart.getDate()+w*7);}
+    html+=`<div class="rt-week"><div class="rt-wk-lbl">W${w+1}</div><div class="rt-days-row">`;
+    for(let d=0;d<7;d++){
+      const isWknd=d>=5;const hasFx=!isWknd&&fxCount<(p.fractions||30);
+      if(hasFx)fxCount++;
+      const absDay=w*7+d+1;
+      const chemoDay=isCtrt&&(p.drugs||[]).some(dr=>dr.days.includes(absDay));
+      let dStr='';if(wStart){const dd=new Date(wStart);dd.setDate(wStart.getDate()+d);dStr=dd.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});}
+      html+=`<div class="rt-d ${chemoDay?'chemo':hasFx?'fx':'off'}" title="${dStr}">${chemoDay?'C':hasFx?fxCount:''}</div>`;
+    }
+    html+=`</div></div>`;
+  }
+  html+=`</div>`;
+  if(p.lastFxDate)html+=`<div style="font-size:9px;background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:4px;margin-top:6px;display:inline-block;">Last fx: ${new Date(p.lastFxDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</div>`;
+  if(isCtrt&&p.drugs?.length)html+=`<div style="font-size:9px;opacity:0.8;margin-top:5px;">Concurrent: ${p.drugs.map(d=>d.mol||'?').join(', ')}</div>`;
+  html+=`</div></div></div>`;
+  return html;
+}
+
+function renderRoadmapFollowUp(p,pi,phStart){
+  const visits=(p.visits||[]).map((v,vi)=>{
+    let planned=v.planned;
+    if(!planned&&phStart){const d=new Date(phStart);d.setMonth(d.getMonth()+(vi+1)*(p.intervalMonths||3));planned=d.toISOString().split('T')[0];}
+    const isDone=!!v.actual;
+    const showDate=isDone?v.actual:planned;
+    const d=showDate?new Date(showDate):null;
+    const displayDate=d?d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}):'—';
+    return`<div class="fu-visit ${isDone?'done':'pending'}" style="min-width:100px;padding:6px 8px;">
+      <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--ink-muted);margin-bottom:2px;">Visit ${vi+1}</div>
+      <div style="font-size:10px;font-weight:600;margin-bottom:4px;">${displayDate}</div>
+      <input type="date" value="${v.actual||''}"
+        style="width:94px;padding:2px 3px;border:1px solid ${isDone?'var(--green)':'var(--border)'};border-radius:4px;font-size:9px;font-family:'JetBrains Mono',monospace;background:${isDone?'var(--green-light)':'#fff'};cursor:pointer;"
+        title="Enter actual visit date"
+        onchange="setVisitActual(${p.id},${vi},this.value);recalcAll()">
+      <div style="font-size:9px;margin-top:3px;color:${isDone?'var(--green)':'var(--ink-muted)'};">${isDone?'✅ Done':'⏳ Pending'}</div>
+    </div>`;
+  }).join('');
+  return`<div class="rm-scroll"><div class="fu-band" style="flex-wrap:wrap;gap:6px;padding:4px 0;">${visits}</div></div>`;
+}
+
+// ═══════════════════════════════════════════
+// BILLING
+// ═══════════════════════════════════════════
+function getHosp(){
+  const g=id=>+document.getElementById(id)?.value||0;
+  return{perSess:g('hDaycare')+g('hNursing')+g('hConsumables')+g('hOtherS'),
+         perCyc:g('hConsult')+g('hDispensing')+g('hLab')+g('hOtherC')};
+}
+
+function calcDayCost(drugs,phCycleNum){
+  const txDays=[...new Set(drugs.flatMap(d=>d.days))].sort((a,b)=>a-b);
+  let totMRP=0,totLP=0;
+  const days=[];
+  txDays.forEach(day=>{
+    let dMRP=0,dLP=0;const det=[];
+    drugs.filter(d=>d.days.includes(day)).forEach(drug=>{
+      const cyc=drug.cycles[phCycleNum-1];if(cyc?.skip)return;
+      const dose=calcDose(drug,phCycleNum);if(!dose||!drug.mol)return;
+      const vr=optVials(dose,drug.mol,drug.tol,drug.mfr);
+      const act=drug.useUd&&vr?.ud?vr.ud:vr?.opt;if(!act)return;
+      dMRP+=act.m;dLP+=act.l;det.push({mol:drug.mol,dose:act.d,mrp:act.m,lp:act.l});
+    });
+    days.push({day,dMRP,dLP,det});totMRP+=dMRP;totLP+=dLP;
+  });
+  return{days,totMRP,totLP,txDays};
+}
+
+function updateBilling(){
+  const c=document.getElementById('billingContent');
+  const{perSess,perCyc}=getHosp();
+  const isPatient=mode==='patient';
+  const showHospital=printMode==='hospital';
+  if(!phases.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon">💰</div><div>Add phases to see billing.</div></div>`;return;}
+
+  // Update print meta
+  document.getElementById('printMeta').textContent=`Generated: ${new Date().toLocaleDateString('en-IN')} · ${document.getElementById('regimenName').value||'Regimen'} · ${isPatient?'Patient billing':'Template estimate'}`;
+  if(isPatient){
+    const name=document.getElementById('ptName').value;
+    const id=document.getElementById('ptId').value;
+    const dx=document.getElementById('ptDx').value;
+    document.getElementById('printPatientBlock').innerHTML=`
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;font-size:10px;">
+        <div><strong>Patient:</strong> ${name||'—'}</div>
+        <div><strong>MRD:</strong> ${id||'—'}</div>
+        <div><strong>Diagnosis:</strong> ${dx||'—'}</div>
+        <div><strong>BSA:</strong> ${pt.bsa?.toFixed(2)||'—'} m²</div>
+        <div><strong>GFR:</strong> ${pt.gfr?.toFixed(1)||'—'} mL/min</div>
+        <div><strong>Start:</strong> ${document.getElementById('startDate').value||'—'}</div>
+      </div>`;
+  }
+
+  let html='';
+  let grandMRP=0,grandLP=0;
+  let courseOff=0;
+
+  phases.forEach((p,pi)=>{
+    const pbCls=PBILL[p.type]||'bc-slate';
+    const icon=ICONS[p.type]||'💊';
+
+    if(p.type==='chemo'){
+      const drugs=p.drugs||[];
+      const txDays=[...new Set(drugs.flatMap(d=>d.days))].sort((a,b)=>a-b);
+      if(!txDays.length){courseOff+=p.numCycles;return;}
+      let phaseMRP=0,phaseLP=0;
+      let cycRows='';
+
+      for(let ci=0;ci<p.numCycles;ci++){
+        const phC=ci+1,crC=courseOff+ci+1;
+        const isLoad=drugs.some(d=>d.hasLoading&&(d.loadingMode==='loading_throughout'||(d.loadingMode==='loading_maintenance'&&phC===1)));
+        const{days,totMRP,totLP}=calcDayCost(drugs,phC);
+        const sess=days.filter(d=>d.dMRP>0).length;
+        const sessH=perSess*sess;
+        const cycMRP=totMRP+sessH+perCyc;
+        const cycLP=totLP;
+        const isRed=drugs.some(d=>d.cycles[ci]?.pct!==100&&!d.cycles[ci]?.skip);
+        const isSk=drugs.length&&drugs.every(d=>d.cycles[ci]?.skip);
+        phaseMRP+=isSk?0:cycMRP;phaseLP+=isSk?0:cycLP;
+
+        const dayRows=days.map(s=>`<tr>
+          <td style="padding-left:16px;font-size:10px;color:rgba(255,255,255,0.5)">Day ${s.day}</td>
+          <td style="font-size:10px;color:rgba(255,255,255,0.4)">${s.det.map(x=>`${x.mol} ${x.dose.toFixed(0)}mg`).join(', ')||'—'}</td>
+          <td class="mn mrp" style="font-size:10px">₹${fmt(s.dMRP)}</td>
+          <td class="mn hs" style="font-size:10px">${perSess>0?'₹'+fmt(perSess):'—'}</td>
+          <td class="mn mrp" style="font-size:10px">₹${fmt(s.dMRP+perSess)}</td>
+          ${showHospital?`<td class="mn lp" style="font-size:10px">₹${fmt(s.dLP)}</td><td class="mn mg" style="font-size:10px">₹${fmt(s.dMRP+perSess-s.dLP)}</td>`:''}
+        </tr>`).join('');
+
+        cycRows+=`<tr class="tr-sub ${isSk?'tr-sk':''}">
+          <td colspan="2">C${phC} <span style="font-size:9px;opacity:0.5">(Course C${crC})</span>
+            ${isLoad?'<span style="font-size:8px;background:var(--amber);color:#fff;padding:1px 3px;border-radius:2px;margin-left:3px;">LOAD</span>':''}
+            ${!isLoad&&drugs.some(d=>d.hasLoading&&d.useLoading)?'<span style="font-size:8px;background:var(--green);color:#fff;padding:1px 3px;border-radius:2px;margin-left:3px;">MAINT</span>':''}
+            ${isRed?'<span style="font-size:9px;color:var(--amber);margin-left:3px;">⚠ reduced</span>':''}
+            ${isSk?'<span style="font-size:8px;background:var(--accent);color:#fff;padding:1px 3px;border-radius:2px;margin-left:3px;">SKIPPED</span>':''}
+          </td>
+          <td class="mn mrp">₹${fmt(isSk?0:totMRP)}</td>
+          <td class="mn hs">${perSess>0&&!isSk?'₹'+fmt(sessH):'—'}</td>
+          <td class="mn mrp">₹${fmt(isSk?0:cycMRP)}</td>
+          ${showHospital?`<td class="mn lp">₹${fmt(isSk?0:cycLP)}</td><td class="mn mg">₹${fmt(isSk?0:cycMRP-cycLP)}</td>`:''}
+        </tr>${dayRows}
+        ${perCyc>0&&!isSk?`<tr><td colspan="2" style="padding-left:16px;font-size:10px;color:rgba(255,255,255,0.4)">Per-cycle charges</td><td>—</td><td class="mn hs" style="font-size:10px">₹${fmt(perCyc)}</td><td class="mn hs" style="font-size:10px">₹${fmt(perCyc)}</td>${showHospital?'<td>—</td><td>—</td>':''}</tr>`:''}`;
+      }
+
+      grandMRP+=phaseMRP;grandLP+=phaseLP;
+      const colHeaders=showHospital
+        ?`<th>Cycle</th><th>Details</th><th>Drug MRP</th><th>Day charges</th><th>Total MRP</th><th>Landing</th><th>Margin</th>`
+        :`<th>Cycle</th><th>Details</th><th>Drug MRP</th><th>Day charges</th><th>Total (Patient)</th>`;
+
+      html+=`<div class="bill-card ${pbCls}">
+        <div class="bill-title">${icon} ${p.name} — C${courseOff+1}–C${courseOff+p.numCycles}${mode==='template'?' (Estimate)':''}</div>
+        <table class="bt"><thead><tr>${colHeaders}</tr></thead>
+        <tbody>${cycRows}
+          <tr class="tr-tot"><td colspan="2">PHASE TOTAL</td><td>—</td>
+          <td>—</td><td class="mn mrp">₹${fmt(phaseMRP)}</td>${showHospital?`<td class="mn lp">₹${fmt(phaseLP)}</td><td class="mn mg">₹${fmt(phaseMRP-phaseLP)}</td>`:''}
+          </tr>
+        </tbody></table>
+      </div>`;
+      courseOff+=p.numCycles;
+    }
+
+    else if(p.type==='surgery'){
+      const m=p.mrpCost||0,l=p.lpCost||0;
+      grandMRP+=m;grandLP+=l;
+      const showFull=(!isPatient||printMode==='hospital');
+      html+=`<div class="bill-card ${pbCls}">
+        <div class="bill-title">${icon} ${p.name}${p.notes?` — ${p.notes}`:''}</div>
+        <table class="bt">
+          <thead><tr><th>Item</th><th>MRP (Patient)</th>${showFull?'<th>Landing (Hospital)</th><th>Margin</th>':''}</tr></thead>
+          <tbody>
+            <tr><td>Surgery cost</td><td class="mn mrp">₹${fmt(m)}</td>${showFull?`<td class="mn lp">₹${fmt(l)}</td><td class="mn mg">₹${fmt(m-l)}</td>`:''}</tr>
+            <tr class="tr-tot"><td>PHASE TOTAL</td><td class="mn mrp">₹${fmt(m)}</td>${showFull?`<td class="mn lp">₹${fmt(l)}</td><td class="mn mg">₹${fmt(m-l)}</td>`:''}</tr>
+          </tbody>
+        </table>
+      </div>`;
+    }
+
+    else if(p.type==='rt'||p.type==='ctrt'){
+      const rtM=p.mrpCost||0,rtL=p.lpCost||0;
+      let drugMRP=0,drugLP=0,drugRows='';
+      if(p.drugs&&p.drugs.length){
+        p.drugs.forEach(drug=>{
+          const dose=calcDose(drug,1);if(!dose||!drug.mol)return;
+          const vr=optVials(dose,drug.mol,drug.tol,drug.mfr);
+          const act=drug.useUd&&vr?.ud?vr.ud:vr?.opt;if(!act)return;
+          const admins=drug.days.length;
+          const tM=act.m*admins,tL=act.l*admins;
+          drugMRP+=tM;drugLP+=tL;
+          drugRows+=`<tr><td>${drug.mol} (${admins} sessions)</td><td class="mn mrp">₹${fmt(tM)}</td>${(!isPatient||printMode==='hospital')?`<td class="mn lp">₹${fmt(tL)}</td><td class="mn mg">₹${fmt(tM-tL)}</td>`:''}</tr>`;
+        });
+      }
+      const totM=rtM+drugMRP,totL=rtL+drugLP;
+      grandMRP+=totM;grandLP+=totL;
+      html+=`<div class="bill-card ${pbCls}">
+        <div class="bill-title">${icon} ${p.name}${p.notes?` — ${p.notes}`:''} (${p.fractions}fx)</div>
+        <table class="bt"><tbody>
+          <tr><td>RT Cost</td><td class="mn mrp">₹${fmt(rtM)}</td>${(!isPatient||printMode==='hospital')?`<td class="mn lp">₹${fmt(rtL)}</td><td class="mn mg">₹${fmt(rtM-rtL)}</td>`:''}</tr>
+          ${drugRows}
+          <tr class="tr-tot"><td>PHASE TOTAL</td><td class="mn mrp">₹${fmt(totM)}</td>${(!isPatient||printMode==='hospital')?`<td class="mn lp">₹${fmt(totL)}</td><td class="mn mg">₹${fmt(totM-totL)}</td>`:''}</tr>
+        </tbody></table>
+      </div>`;
+    }
+
+    else if(p.type==='recovery'){
+      const visits=(p.visits||[]).filter(v=>v.actual).length;
+      const totConsult=(p.consultCharge||0)*Math.max(visits,1);
+      grandMRP+=totConsult;
+      html+=`<div class="bill-card ${pbCls}">
+        <div class="bill-title">${icon} ${p.name}${p.notes?` — ${p.notes}`:''}</div>
+        ${totConsult>0?`<table class="bt"><tbody><tr><td>Consult charges</td><td class="mn mrp">₹${fmt(totConsult)}</td></tr></tbody></table>`:`<p style="font-size:11px;opacity:0.6;margin-top:4px;">Timeline placeholder — no drug costs.</p>`}
+      </div>`;
+    }
+
+    else if(p.type==='followup'){
+      const completedVisits=(p.visits||[]).filter(v=>v.actual).length;
+      const totalVisits=(p.visits||[]).length;
+      const totM=(p.consultCharge||0)*completedVisits;
+      const projectedM=(p.consultCharge||0)*totalVisits;
+      grandMRP+=projectedM;
+      html+=`<div class="bill-card ${pbCls}">
+        <div class="bill-title">${icon} ${p.name} — ${p.durationMonths}mo / every ${p.intervalMonths}mo</div>
+        <table class="bt"><tbody>
+          <tr><td>Total planned visits</td><td class="mn" style="color:#e8daef">${totalVisits}</td></tr>
+          <tr><td>Completed visits</td><td class="mn lp">${completedVisits}</td></tr>
+          ${p.consultCharge>0?`<tr><td>Consult charge / visit</td><td class="mn mrp">₹${fmt(p.consultCharge)}</td></tr>
+          <tr><td>Completed visits cost</td><td class="mn mrp">₹${fmt(totM)}</td></tr>
+          <tr class="tr-tot"><td>Projected full follow-up cost</td><td class="mn mrp">₹${fmt(projectedM)}</td></tr>`:''}
+        </tbody></table>
+      </div>`;
+    }
+  });
+
+  // Grand Total
+  html+=`<div class="bill-card bc-grand">
+    <div class="bill-title">Full Course — Grand Total${mode==='template'?' (Estimate)':''}</div>
+    <table class="bt">
+      <thead><tr><th>Phase</th><th>Type</th><th>MRP (Patient)</th>${(!printMode||printMode==='hospital')?'<th>Landing</th><th>Margin</th>':''}</tr></thead>
+      <tbody>
+        ${phases.map(p=>{
+          let m=0,l=0;
+          if(p.type==='chemo'){const drugs=p.drugs||[];for(let ci=0;ci<p.numCycles;ci++){const{totMRP,totLP,days}=calcDayCost(drugs,ci+1);const sess=days.filter(d=>d.dMRP>0).length;m+=totMRP+perSess*sess+perCyc;l+=totLP;}}
+          else if(p.type==='surgery'){m=p.mrpCost||0;l=p.lpCost||0;}
+          else if(p.type==='rt'||p.type==='ctrt'){m=p.mrpCost||0;l=p.lpCost||0;if(p.drugs)p.drugs.forEach(drug=>{const dose=calcDose(drug,1);if(!dose||!drug.mol)return;const vr=optVials(dose,drug.mol,drug.tol,drug.mfr);const act=drug.useUd&&vr?.ud?vr.ud:vr?.opt;if(!act)return;m+=act.m*drug.days.length;l+=act.l*drug.days.length;});}
+          else if(p.type==='recovery'){m=(p.consultCharge||0);}
+          else if(p.type==='followup'){m=(p.consultCharge||0)*(p.visits?.length||0);}
+          return`<tr><td>${ICONS[p.type]} ${p.name}</td><td style="font-size:10px;opacity:0.6">${p.type}</td><td class="mn mrp">₹${fmt(m)}</td>${(!printMode||printMode==='hospital')?`<td class="mn lp">₹${fmt(l)}</td><td class="mn mg">₹${fmt(m-l)}</td>`:''}</tr>`;
+        }).join('')}
+        <tr class="tr-tot"><td colspan="2">GRAND TOTAL</td><td class="mn mrp">₹${fmt(grandMRP)}</td>${(!printMode||printMode==='hospital')?`<td class="mn lp">₹${fmt(grandLP)}</td><td class="mn mg">₹${fmt(grandMRP-grandLP)}</td>`:''}</tr>
+      </tbody>
+    </table>
+    ${mode==='template'?'<p style="font-size:10px;opacity:0.5;margin-top:8px;">* Estimate based on standard BSA 1.73 m². Actual cost depends on patient parameters.</p>':''}
+  </div>
+  <p style="font-size:10px;color:var(--ink-muted);margin-top:10px;line-height:1.6;">⚠️ <em>Decision-support tool only. Final dose approval is the responsibility of the treating oncologist. Doses rounded to available vial combinations per institutional tolerance protocol.</em></p>`;
+
+  c.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════
+// FORMULARY TAB
+// ═══════════════════════════════════════════
+let fmSelectedIdx=null;
+
+function renderFormulary(){
+  const search=(document.getElementById('fmSearch')?.value||'').toLowerCase();
+  const list=document.getElementById('fmDrugList');
+  if(!list)return;
+
+  // Drug list panel
+  list.innerHTML=FORMULARY
+    .map((f,fi)=>({f,fi}))
+    .filter(({f})=>!search||f.mol.toLowerCase().includes(search))
+    .map(({f,fi})=>`<div onclick="selectFmDrug(${fi})"
+      style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);font-size:12px;font-weight:500;
+        background:${fmSelectedIdx===fi?'var(--blue-light)':''};
+        color:${fmSelectedIdx===fi?'var(--blue)':'var(--ink)'};
+        display:flex;align-items:center;justify-content:space-between;">
+      <span>${f.mol}</span>
+      <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--ink-muted);background:var(--paper-warm);padding:1px 5px;border-radius:3px;">${f.dt}</span>
+    </div>`).join('');
+
+  // Detail panel
+  if(fmSelectedIdx!==null) renderFmDetail(fmSelectedIdx);
+}
+
+function selectFmDrug(fi){
+  fmSelectedIdx=fi;
+  renderFormulary();
+}
+
+function renderFmDetail(fi){
+  const f=FORMULARY[fi];
+  if(!f)return;
+  const detail=document.getElementById('fmDetail');
+  if(!detail)return;
+
+  // SKU rows
+  const skuRows=f.skus.map((sk,si)=>`
+    <tr style="border-top:1px solid var(--border);">
+      <td style="padding:7px 8px;">
+        <input value="${sk.b}" style="width:100%;border:1px solid transparent;border-radius:4px;padding:3px 5px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;"
+          onfocus="this.style.border='1px solid var(--blue)'"
+          onblur="this.style.border='1px solid transparent'"
+          onchange="updSKU(${fi},${si},'b',this.value)">
+      </td>
+      <td style="padding:7px 8px;">
+        <input type="number" value="${sk.s}" style="width:70px;border:1px solid transparent;border-radius:4px;padding:3px 5px;font-size:12px;font-family:'JetBrains Mono',monospace;"
+          onfocus="this.style.border='1px solid var(--blue)'"
+          onblur="this.style.border='1px solid transparent'"
+          onchange="updSKU(${fi},${si},'s',+this.value)">
+      </td>
+      <td style="padding:7px 8px;">
+        <input type="number" value="${sk.mrp}" style="width:80px;border:1px solid transparent;border-radius:4px;padding:3px 5px;font-size:12px;font-family:'JetBrains Mono',monospace;"
+          onfocus="this.style.border='1px solid var(--blue)'"
+          onblur="this.style.border='1px solid transparent'"
+          onchange="updSKU(${fi},${si},'mrp',+this.value)">
+      </td>
+      <td style="padding:7px 8px;">
+        <input type="number" value="${sk.lp}" style="width:80px;border:1px solid transparent;border-radius:4px;padding:3px 5px;font-size:12px;font-family:'JetBrains Mono',monospace;"
+          onfocus="this.style.border='1px solid var(--blue)'"
+          onblur="this.style.border='1px solid transparent'"
+          onchange="updSKU(${fi},${si},'lp',+this.value)">
+      </td>
+      <td style="padding:7px 8px;">
+        <input value="${sk.mfr||'Intas'}" style="width:70px;border:1px solid transparent;border-radius:4px;padding:3px 5px;font-size:12px;"
+          onfocus="this.style.border='1px solid var(--blue)'"
+          onblur="this.style.border='1px solid transparent'"
+          onchange="updSKU(${fi},${si},'mfr',this.value)">
+      </td>
+      <td style="padding:7px 8px;">
+        <button class="btn btn-sm btn-danger" onclick="removeSKU(${fi},${si})">✕</button>
+      </td>
+    </tr>`).join('');
+
+  // Loading/maintenance section
+  const loadSection=`
+    <div style="margin-top:16px;padding:12px;background:var(--amber-light);border:1px solid #f0b027;border-radius:8px;">
+      <div style="font-size:11px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">Loading / Maintenance Doses</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <label style="font-size:12px;color:var(--ink-soft);min-width:110px;">Has loading dose</label>
+        <div class="tog ${f.hl?'on':''}" onclick="updFm(${fi},'hl',!${!!f.hl});renderFmDetail(${fi})" style="background:${f.hl?'var(--amber)':'var(--border)'};cursor:pointer;"></div>
+        <span style="font-size:11px;color:var(--ink-muted);">${f.hl?'Yes — loading/maintenance controls shown on drug entry':'No — uniform dose every cycle'}</span>
+      </div>
+      ${f.hl?`
+      ${f.dt==='weight'?`
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div class="fg"><label>Loading dose (mg/kg)</label>
+            <input type="number" value="${f.ldp||''}" step="0.1" placeholder="e.g. 8"
+              style="width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:13px;"
+              onchange="updFm(${fi},'ldp',+this.value)"></div>
+          <div class="fg"><label>Maintenance dose (mg/kg)</label>
+            <input type="number" value="${f.mdp||''}" step="0.1" placeholder="e.g. 6"
+              style="width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:13px;"
+              onchange="updFm(${fi},'mdp',+this.value)"></div>
+        </div>`:''}
+      ${f.dt==='fixed'?`
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div class="fg"><label>Loading dose (mg)</label>
+            <input type="number" value="${f.ldf||''}" placeholder="e.g. 840"
+              style="width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:13px;"
+              onchange="updFm(${fi},'ldf',+this.value)"></div>
+          <div class="fg"><label>Maintenance dose (mg)</label>
+            <input type="number" value="${f.mdf||''}" placeholder="e.g. 420"
+              style="width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:13px;"
+              onchange="updFm(${fi},'mdf',+this.value)"></div>
+        </div>`:''}
+      ${f.dt==='bsa'?`
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div class="fg"><label>Loading dose (mg/m²)</label>
+            <input type="number" value="${f.ldp||''}" step="0.1" placeholder="e.g. 375"
+              style="width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:13px;"
+              onchange="updFm(${fi},'ldp',+this.value)"></div>
+          <div class="fg"><label>Maintenance dose (mg/m²)</label>
+            <input type="number" value="${f.mdp||''}" step="0.1" placeholder="e.g. 300"
+              style="width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:13px;"
+              onchange="updFm(${fi},'mdp',+this.value)"></div>
+        </div>`:''}
+      `:''}
+    </div>`;
+
+  detail.innerHTML=`
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+      <div>
+        <input value="${f.mol}" style="font-family:'Playfair Display',serif;font-size:18px;border:none;border-bottom:2px solid var(--border);padding:2px 4px;width:280px;background:transparent;"
+          onfocus="this.style.borderColor='var(--blue)'"
+          onblur="this.style.borderColor='var(--border)'"
+          onchange="updFm(${fi},'mol',this.value)">
+        <div style="font-size:10px;color:var(--ink-muted);margin-top:4px;">${f.skus.length} SKU(s) · Click any field to edit</div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="removeFm(${fi})">🗑 Remove Drug</button>
+    </div>
+
+    <!-- Basic settings -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div class="fg"><label>Dose Type</label>
+        <select onchange="updFm(${fi},'dt',this.value)" style="padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:13px;width:100%;">
+          <option value="bsa" ${f.dt==='bsa'?'selected':''}>BSA (mg/m²)</option>
+          <option value="weight" ${f.dt==='weight'?'selected':''}>Weight (mg/kg)</option>
+          <option value="auc" ${f.dt==='auc'?'selected':''}>AUC</option>
+          <option value="fixed" ${f.dt==='fixed'?'selected':''}>Fixed (mg)</option>
+        </select>
+      </div>
+      <div class="fg"><label>Underdose Tolerance %</label>
+        <input type="number" value="${f.tol||5}" min="0" max="20" step="0.5"
+          style="padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:13px;width:100%;"
+          onchange="updFm(${fi},'tol',+this.value)">
+      </div>
+      <div class="fg"><label>Unit</label>
+        <input value="${f.unit||'mg'}" placeholder="mg / IU / mcg"
+          style="padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:13px;width:100%;"
+          onchange="updFm(${fi},'unit',this.value)">
+      </div>
+    </div>
+
+    ${loadSection}
+
+    <!-- SKUs -->
+    <div style="margin-top:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-size:12px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.4px;">Vial SKUs</div>
+        <button class="btn btn-sm btn-green" onclick="addSKU(${fi})">+ Add SKU</button>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="background:var(--paper-warm);">
+            <th style="text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:var(--ink-muted);">Brand Name</th>
+            <th style="text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:var(--ink-muted);">Strength (mg)</th>
+            <th style="text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:var(--ink-muted);">MRP ₹</th>
+            <th style="text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:var(--ink-muted);">Landing ₹</th>
+            <th style="text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:var(--ink-muted);">Manufacturer</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>${skuRows}</tbody>
+      </table>
+      ${f.skus.length===0?'<div style="padding:16px;text-align:center;color:var(--ink-muted);font-size:12px;">No SKUs — add one above</div>':''}
+    </div>
+
+    <!-- Cost preview -->
+    ${f.skus.length>0?`<div style="margin-top:14px;padding:10px 12px;background:var(--green-light);border-radius:7px;border:1px solid var(--green);">
+      <div style="font-size:10px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">Price Summary</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        ${f.skus.map(sk=>`<div style="font-size:11px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-weight:600;">${sk.s}mg</span>
+          <span style="color:var(--ink-muted);"> · MRP </span><span style="font-family:'JetBrains Mono',monospace;color:var(--accent);">₹${Math.round(sk.mrp).toLocaleString('en-IN')}</span>
+          <span style="color:var(--ink-muted);"> · LP </span><span style="font-family:'JetBrains Mono',monospace;color:var(--green);">₹${Math.round(sk.lp).toLocaleString('en-IN')}</span>
+          <span style="color:var(--ink-muted);"> · Margin </span><span style="font-family:'JetBrains Mono',monospace;color:var(--amber);">₹${Math.round(sk.mrp-sk.lp).toLocaleString('en-IN')}</span>
+        </div>`).join('')}
+      </div>
+    </div>`:''}`;
+}
+
+function updFm(fi,f,v){
+  FORMULARY[fi][f]=v;
+  saveFormulary();
+  renderFormulary();
+  renderBuilder();
+}
+function updSKU(fi,si,field,val){
+  FORMULARY[fi].skus[si][field]=val;
+  FORMULARY[fi].skus.sort((a,b)=>b.s-a.s);
+  saveFormulary();
+  renderFmDetail(fi);
+  renderBuilder();
+}
+function removeFm(fi){
+  if(!confirm('Remove '+FORMULARY[fi].mol+'?'))return;
+  FORMULARY.splice(fi,1);
+  fmSelectedIdx=null;
+  saveFormulary();
+  renderFormulary();
+}
+function addFormularyDrug(){
+  FORMULARY.push({mol:'NEW DRUG',skus:[{b:'Brand 10MG',s:10,mrp:100,lp:50,mfr:'Intas'}],dt:'bsa',tol:5,hl:false});
+  fmSelectedIdx=FORMULARY.length-1;
+  saveFormulary();
+  renderFormulary();
+}
+function addSKU(fi){
+  FORMULARY[fi].skus.push({b:'New Brand',s:10,mrp:100,lp:50,mfr:'Intas'});
+  FORMULARY[fi].skus.sort((a,b)=>b.s-a.s);
+  saveFormulary();
+  renderFmDetail(fi);
+}
+function removeSKU(fi,si){
+  FORMULARY[fi].skus.splice(si,1);
+  if(fmSelectedIdx===fi) renderFmDetail(fi);
+  saveFormulary();
+  renderFormulary();
+}
+
+function exportFormulary(){
+  const rows=[['Molecule','Brand','Strength_mg','MRP','Landing','Manufacturer','DoseType','Tolerance','HasLoading','LoadingDose','MaintenanceDose']];
+  FORMULARY.forEach(f=>{
+    f.skus.forEach(sk=>{
+      rows.push([f.mol,sk.b,sk.s,sk.mrp,sk.lp,sk.mfr||'Intas',f.dt,f.tol,f.hl?'yes':'no',
+        f.ldp||f.ldf||'',f.mdp||f.mdf||'']);
+    });
+  });
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='OncoDose_Formulary_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+  showToast('Formulary exported');
+}
+
+function importFormulary(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const text=ev.target.result;
+    const lines=text.split('\n').slice(1);
+    let added=0,updated=0;
+    lines.forEach(line=>{
+      // Handle quoted CSV properly
+      const cols=line.match(/(".*?"|[^,]+)(?=,|$)/g)||[];
+      const clean=cols.map(s=>s.trim().replace(/^"|"$/g,'').replace(/""/g,'"'));
+      if(clean.length<5)return;
+      const[mol,brand,strength,mrp,lp,mfr,dt,tol,hl,ldose,mdose]=clean;
+      if(!mol||!brand||!strength)return;
+      let existing=FORMULARY.find(f=>f.mol===mol.toUpperCase());
+      if(!existing){
+        existing={mol:mol.toUpperCase(),skus:[],dt:dt||'bsa',tol:+tol||5,hl:hl==='yes',
+          ldp:dt==='weight'?+ldose||null:null,mdp:dt==='weight'?+mdose||null:null,
+          ldf:dt==='fixed'?+ldose||null:null,mdf:dt==='fixed'?+mdose||null:null};
+        FORMULARY.push(existing);added++;
+      }
+      const skuStrength=+strength;
+      const existSKU=existing.skus.find(sk=>sk.b===brand);
+      if(existSKU){existSKU.mrp=+mrp;existSKU.lp=+lp;existSKU.mfr=mfr||'Intas';updated++;}
+      else{existing.skus.push({b:brand,s:skuStrength,mrp:+mrp,lp:+lp,mfr:mfr||'Intas'});added++;}
+      existing.skus.sort((a,b)=>b.s-a.s);
+    });
+    saveFormulary();renderFormulary();renderBuilder();
+    showToast('Imported: '+added+' added, '+updated+' updated');
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ═══════════════════════════════════════════
+// SAVE / LOAD
+// ═══════════════════════════════════════════
+function saveRecord(){
+  const name=document.getElementById('regimenName').value||(mode==='template'?`Template ${savedRecords.filter(r=>r.mode==='template').length+1}`:`Patient ${savedRecords.filter(r=>r.mode==='patient').length+1}`);
+  const rec={
+    id:Date.now(),name,mode,
+    phases:JSON.parse(JSON.stringify(phases)),
+    h:document.getElementById('height').value,
+    w:document.getElementById('weight').value,
+    age:document.getElementById('age').value,
+    sex:document.getElementById('sex').value,
+    cr:document.getElementById('creat').value,
+    sd:document.getElementById('startDate').value,
+    ptName:document.getElementById('ptName').value,
+    ptId:document.getElementById('ptId').value,
+    ptDob:document.getElementById('ptDob').value,
+    ptDx:document.getElementById('ptDx').value,
+    savedAt:new Date().toLocaleDateString('en-IN')
+  };
+  savedRecords.push(rec);
+  // If saving a patient, offer to also save as template
+  if(mode==='patient' && confirm('Save protocol as a reusable template too?\n(Strips patient details and dates — saves as a clean protocol)')){
+    const tName=name+' (Protocol)';
+    const tPhases=JSON.parse(JSON.stringify(phases));
+    // Strip all date overrides
+    tPhases.forEach(p=>{
+      p.phaseStartOverride='';p.cycleOverrides=[];
+      if('surgeryDate' in p)p.surgeryDate='';
+      if('dischargeDate' in p)p.dischargeDate='';
+      if('lastFxDate' in p)p.lastFxDate='';
+      if(p.visits)p.visits=p.visits.map(v=>({...v,actual:''}));
+    });
+    const tRec={id:Date.now()+1,name:tName,mode:'template',phases:tPhases,savedAt:new Date().toLocaleDateString('en-IN')};
+    savedRecords.push(tRec);
+    showToast('Saved patient + template: '+name);
+  } else {
+    showToast('Saved: '+name);
+  }
+  localStorage.setItem('oncodose_v4',JSON.stringify(savedRecords));
+  if(window.FB?.user()){
+    const toSync=savedRecords.slice(-2); // last 1-2 added
+    Promise.all(toSync.map(r=>window.FB.saveRecord(r))).then(()=>setSyncStatus('✓ Saved & synced',true));
+  }
+  renderSaved();
+}
+
+function loadRecord(id){
+  const rec=savedRecords.find(r=>r.id===id);if(!rec)return;
+  phases=JSON.parse(JSON.stringify(rec.phases));
+  pidCtr=Math.max(0,...phases.map(p=>p.id),0);
+  didCtr=Math.max(0,...phases.flatMap(p=>(p.drugs||[]).map(d=>d.id)),0);
+  document.getElementById('regimenName').value=rec.name;
+  if(rec.h)document.getElementById('height').value=rec.h;
+  if(rec.w)document.getElementById('weight').value=rec.w;
+  if(rec.age)document.getElementById('age').value=rec.age;
+  if(rec.sex)document.getElementById('sex').value=rec.sex;
+  if(rec.cr)document.getElementById('creat').value=rec.cr;
+  if(rec.sd)document.getElementById('startDate').value=rec.sd;
+  if(rec.ptName)document.getElementById('ptName').value=rec.ptName;
+  if(rec.ptId)document.getElementById('ptId').value=rec.ptId;
+  if(rec.ptDob)document.getElementById('ptDob').value=rec.ptDob;
+  if(rec.ptDx)document.getElementById('ptDx').value=rec.ptDx;
+  setMode(rec.mode||'template');
+  calcPt();renderBuilder();recalcAll();switchTab('builder');showToast(`Loaded: ${rec.name}`);
+}
+
+function loadAsPatient(id){
+  const rec=savedRecords.find(r=>r.id===id);if(!rec)return;
+  phases=JSON.parse(JSON.stringify(rec.phases));
+  pidCtr=Math.max(0,...phases.map(p=>p.id),0);
+  didCtr=Math.max(0,...phases.flatMap(p=>(p.drugs||[]).map(d=>d.id)),0);
+  document.getElementById('regimenName').value=rec.name;
+  // Clear patient-specific fields
+  ['ptName','ptId','ptDob','ptDx','startDate','height','weight','age','creat'].forEach(id=>{document.getElementById(id).value='';});
+  setMode('patient');renderBuilder();switchTab('builder');showToast(`Template loaded — enter patient details`);
+}
+
+function deleteRecord(id){
+  if(!confirm('Delete this record?'))return;
+  savedRecords=savedRecords.filter(r=>r.id!==id);
+  localStorage.setItem('oncodose_v4',JSON.stringify(savedRecords));
+  if(window.FB?.user()) window.FB.deleteRecord(id).then(()=>setSyncStatus('✓ Deleted',true));
+  renderSaved();
+}
+
+function filterSaved(f){
+  savedFilter=f;
+  ['template','patient','all'].forEach(x=>document.getElementById('filter'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('btn-ink',f===x));
+  renderSaved();
+}
+
+function renderSaved(){
+  const c=document.getElementById('savedList');
+  const recs=savedFilter==='all'?savedRecords:savedRecords.filter(r=>r.mode===savedFilter);
+  if(!recs.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div style="font-size:13px;">No saved ${savedFilter==='all'?'records':savedFilter+'s'} yet.</div></div>`;return;}
+  c.innerHTML=recs.map(r=>`<div class="saved-card">
+    <div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="font-size:11px;padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace;${r.mode==='template'?'background:var(--blue-light);color:var(--blue)':'background:var(--green-light);color:var(--green)'}">${r.mode==='template'?'📋 Template':'👤 Patient'}</span>
+        <span style="font-weight:600;font-size:13px;">${r.name}</span>
+      </div>
+      <div style="font-size:10px;color:var(--ink-muted);font-family:'JetBrains Mono',monospace;margin-top:2px;">${r.phases?.length||0} phase(s) · Saved ${r.savedAt}${r.ptDx?` · ${r.ptDx}`:''}</div>
+    </div>
+    <div style="display:flex;gap:5px;">
+      <button class="btn btn-sm btn-ink" onclick="loadRecord(${r.id})">Load</button>
+      ${r.mode==='template'?`<button class="btn btn-sm btn-green" onclick="loadAsPatient(${r.id})" title="Apply to new patient">→ Patient</button>`:''}
+      <button class="btn btn-sm btn-danger" onclick="deleteRecord(${r.id})">✕</button>
+    </div>
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// PRINT
+// ═══════════════════════════════════════════
+function showPrintMenu(){
+  document.getElementById('printModal').style.display='flex';
+}
+function closePrintModal(){
+  document.getElementById('printModal').style.display='none';
+}
+function doPrint(mode){
+  printMode=mode;
+  closePrintModal();
+  if(mode==='roadmap'){
+    printRoadmapSVG();
+    return;
+  }
+  updateBilling();
+  switchTab('billing');
+  document.getElementById('printPatientBlock').style.display=(mode==='patient')?'block':'none';
+  setTimeout(()=>window.print(),400);
+}
+
+// ── SVG ROADMAP PRINT ──────────────────────────────────────────
+function printRoadmapSVG(){
+  const PAD=36, SVG_W=900;
+  const PHASE_COLORS={chemo:'#154360',surgery:'#6c3483',rt:'#1a6b45',ctrt:'#b7770d',recovery:'#566573',followup:'#922b21'};
+  const DRUG_BG=['#dbeafe','#dcfce7','#fce7f3','#ffedd5','#ede9fe','#fef9c3','#fee2e2','#f0fdf4'];
+  const DRUG_FG=['#1e40af','#166534','#9d174d','#9a3412','#5b21b6','#854d0e','#991b1b','#15803d'];
+
+  // Collect all drugs across all phases for consistent colour mapping
+  const allDrugs=[];
+  phases.forEach(p=>(p.drugs||[]).forEach(d=>{if(d.mol&&!allDrugs.find(x=>x.mol===d.mol))allDrugs.push(d);}));
+  const drugColor=mol=>{const i=allDrugs.findIndex(d=>d.mol===mol);return{bg:DRUG_BG[i%8],fg:DRUG_FG[i%8]};};
+
+  const els=[];
+  let y=PAD+56;
+
+  const R=(x,yy,w,h,fill,rx=3,stroke='none',sw=0.5)=>
+    `<rect x="${x}" y="${yy}" width="${w}" height="${h}" fill="${fill}" rx="${rx}"${stroke!=='none'?` stroke="${stroke}" stroke-width="${sw}"`:''}/>`;
+  const T=(x,yy,txt,size=11,fill='#0d1b2a',anchor='start',weight='normal',italic=false)=>
+    `<text x="${x}" y="${yy}" font-size="${size}" fill="${fill}" text-anchor="${anchor}" font-weight="${weight}"${italic?' font-style="italic"':''} font-family="Arial,sans-serif">${String(txt).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</text>`;
+  const L=(x1,y1,x2,y2,stroke='#ddd',sw=0.5)=>
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="${sw}"/>`;
+
+  let courseOff=0;
+
+  phases.forEach((p,pi)=>{
+    const phStart=getPhaseStart(pi);
+    const phEnd=phStart?getPhaseEnd(p,phStart):null;
+    const phColor=PHASE_COLORS[p.type]||'#333';
+    const icon={chemo:'●',surgery:'✦',rt:'◈',ctrt:'◉',recovery:'◌',followup:'◎'}[p.type]||'●';
+
+    // Phase header bar
+    const startStr=phStart?phStart.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'';
+    const endStr=phEnd?phEnd.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'';
+    els.push(R(PAD, y, SVG_W-PAD*2, 24, phColor, 4));
+    els.push(T(PAD+10, y+16, `${pi+1}.  ${icon}  ${p.name}`, 12, '#fff', 'start', 'bold'));
+    if(startStr) els.push(T(SVG_W-PAD-8, y+16, startStr+(endStr?' → '+endStr:''), 9, 'rgba(255,255,255,0.75)', 'end'));
+    y+=28;
+
+    if(p.type==='chemo'){
+      const drugs=p.drugs||[];
+
+      for(let ci=0;ci<p.numCycles;ci++){
+        const phC=ci+1, crC=courseOff+ci+1;
+        const cycStart=phStart?getCycleStart(p,phStart,ci):null;
+        const isSk=drugs.length&&drugs.every(d=>d.cycles[ci]?.skip);
+        const isLoad=drugs.some(d=>d.hasLoading&&(d.loadingMode==='loading_throughout'||(d.loadingMode==='loading_maintenance'&&phC===1)));
+        const hasOv=p.cycleOverrides&&p.cycleOverrides[ci];
+
+        // Collect all unique treatment days across all drugs this cycle
+        const txDays=[...new Set(drugs.flatMap(d=>d.days))].sort((a,b)=>a-b);
+
+        // Detect consecutive days to compress
+        // Group into ranges per drug
+        const cycleStartY=y;
+
+        // Cycle label row
+        const cycEndDate=cycStart?new Date(cycStart.getTime()+(p.cycleLen-1)*86400000):null;
+        const cycStartStr=cycStart?cycStart.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'';
+        const cycEndStr=cycEndDate?cycEndDate.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'';
+        const cycBg=ci%2===0?'#f0f4f8':'#f8f9fa';
+        const cycLabel=`Cycle ${phC}${crC!==phC?' (Course '+crC+')':''}${isLoad?' ⚡ Loading':''}${isSk?' — SKIPPED':''}${hasOv?' 📌':''}`;
+
+        els.push(R(PAD, y, SVG_W-PAD*2, 20, isSk?'#f5f5f5':cycBg, 0, '#ddd'));
+        els.push(T(PAD+8, y+14, cycLabel, 10, isSk?'#aaa':phColor, 'start', '600'));
+        if(cycStartStr) els.push(T(SVG_W-PAD-8, y+14, `${cycStartStr} – ${cycEndStr}`, 9, '#888', 'end'));
+        y+=20;
+
+        if(!isSk){
+          // For each unique treatment date, show date + drugs given on that day
+          const dayGroups={};
+          drugs.forEach(d=>{
+            d.days.forEach(day=>{
+              if(!dayGroups[day]) dayGroups[day]=[];
+              dayGroups[day].push(d);
+            });
+          });
+
+          txDays.forEach(day=>{
+            const drugsOnDay=dayGroups[day]||[];
+            const adminDate=cycStart?new Date(cycStart.getTime()+(day-1)*86400000):null;
+            const adminDateStr=adminDate?adminDate.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
+
+            const rowH=20;
+            els.push(L(PAD+20, y, SVG_W-PAD, y, '#eee'));
+
+            // Date — primary, bold
+            els.push(T(PAD+20, y+13, adminDateStr, 11, '#0d1b2a', 'start', '600'));
+            // Day number — secondary, small grey
+            els.push(T(PAD+95, y+13, `(Day ${day})`, 8, '#aaa', 'start'));
+
+            // Drug pills
+            let dx=PAD+150;
+            drugsOnDay.forEach(d=>{
+              const cyc=d.cycles[ci];
+              const isRed=cyc&&!cyc.skip&&cyc.pct!==100;
+              const {bg,fg}=drugColor(d.mol);
+              const label=`${d.mol}${isRed?` ${cyc.pct}%`:''}`;
+              const pillW=Math.min(label.length*5.5+14, 160);
+              if(dx+pillW > SVG_W-PAD-4){
+                // wrap to next line — just truncate for now
+                return;
+              }
+              els.push(R(dx, y+4, pillW, 14, bg, 7));
+              els.push(T(dx+7, y+14, label, 8, fg));
+              dx+=pillW+5;
+            });
+            y+=rowH;
+          });
+        }
+        y+=4; // small gap after cycle
+      }
+      courseOff+=p.numCycles;
+    }
+
+    else if(p.type==='surgery'){
+      const surgStr=p.surgeryDate?new Date(p.surgeryDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):startStr;
+      const discStr=p.dischargeDate?new Date(p.dischargeDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):endStr;
+      els.push(R(PAD, y, SVG_W-PAD*2, 38, '#f5eef8', 4, '#c39bd3'));
+      els.push(T(PAD+12, y+14, `🔪  Surgery Date:  ${surgStr}`, 11, '#6c3483', 'start', '600'));
+      els.push(T(PAD+12, y+30, `🏥  Discharge Date:  ${discStr}${p.notes?'   ·   '+p.notes:''}`, 10, '#6c3483'));
+      y+=44;
+    }
+
+    else if(p.type==='rt'||p.type==='ctrt'){
+      const weeks=Math.ceil((p.fractions||30)/(p.fxPerWeek||5));
+      const lastFxStr=p.lastFxDate?new Date(p.lastFxDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'';
+      els.push(R(PAD, y, SVG_W-PAD*2, p.type==='ctrt'?50:38, '#e8f5ee', 4, '#1a6b45'));
+      els.push(T(PAD+12, y+14, `☢  ${p.name}:  ${p.fractions} fractions  ·  ${weeks} weeks${lastFxStr?'  ·  Last fraction: '+lastFxStr:''}`, 11, '#1a6b45', 'start', '600'));
+      if(p.notes) els.push(T(PAD+12, y+29, p.notes, 9, '#1a6b45', 'start', 'normal', true));
+      if(p.type==='ctrt'&&p.drugs?.length){
+        const drugNames=p.drugs.filter(d=>d.mol).map(d=>d.mol).join(', ');
+        els.push(T(PAD+12, y+44, `Concurrent chemotherapy:  ${drugNames}`, 9, '#b7770d'));
+        y+=56;
+      } else { y+=44; }
+    }
+
+    else if(p.type==='recovery'){
+      els.push(R(PAD, y, SVG_W-PAD*2, 26, '#f2f3f4', 4, '#ccc'));
+      els.push(T(PAD+12, y+17, `🛌  ${p.name}:  ${p.duration} ${p.durationUnit||'days'}${p.notes?'   ·   '+p.notes:''}`, 10, '#566573'));
+      y+=32;
+    }
+
+    else if(p.type==='followup'){
+      const visits=p.visits||[];
+      const completedCount=visits.filter(v=>v.actual).length;
+      els.push(R(PAD, y, SVG_W-PAD*2, 22, '#fdedec', 4, '#c0392b'));
+      els.push(T(PAD+12, y+15, `🔍  ${p.name}:  ${p.durationMonths} months,  every ${p.intervalMonths} months  ·  ${completedCount}/${visits.length} visits completed`, 10, '#922b21', 'start', '600'));
+      y+=26;
+      // Visit rows — 4 per row
+      const VW=200, VH=22, VCOLS=4;
+      visits.forEach((v,vi)=>{
+        const col=vi%VCOLS; const row=Math.floor(vi/VCOLS);
+        const vx=PAD+(col*(VW+4));
+        const vy=y+row*VH;
+        const planned=v.planned||(phStart?new Date(phStart.getTime()+(vi+1)*(p.intervalMonths||3)*30*86400000).toISOString().split('T')[0]:'');
+        const showD=v.actual||planned;
+        const isDone=!!v.actual;
+        const d=showD?new Date(showD):null;
+        const dStr=d?d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}):'—';
+        els.push(R(vx, vy+2, VW-4, 18, isDone?'#e8f5ee':'#fff', 3, isDone?'#1a6b45':'#ccc'));
+        els.push(T(vx+6, vy+14, `V${vi+1}: ${dStr}  ${isDone?'✅':'⏳'}`, 9, isDone?'#1a6b45':'#666'));
+      });
+      y+=Math.ceil(visits.length/VCOLS)*VH+6;
+    }
+
+    // Gap band
+    if(p.gapVal>0){
+      const gapDays=gapToDays(p.gapVal,p.gapUnit);
+      let gapDateStr='';
+      if(phEnd){
+        const gs=new Date(phEnd);gs.setDate(gs.getDate()+1);
+        const ge=new Date(gs);ge.setDate(gs.getDate()+gapDays-1);
+        gapDateStr=`  (${gs.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})} → ${ge.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})})`;
+      }
+      els.push(R(PAD+16, y+3, SVG_W-PAD*2-32, 18, '#ede8e0', 4, '#c8c0b4'));
+      els.push(T(SVG_W/2, y+15, `⏸  ${p.gapLabel||'Gap'}  —  ${p.gapVal} ${p.gapUnit}${gapDateStr}`, 9, '#7f8c8d', 'middle'));
+      y+=24;
+    }
+    y+=14; // space between phases
+  });
+
+  const totalH=y+PAD;
+  const ptName=document.getElementById('ptName')?.value||'';
+  const regimenN=document.getElementById('regimenName')?.value||'Treatment Regimen';
+  const startDateVal=document.getElementById('startDate')?.value||'';
+  const today=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const ptId=document.getElementById('ptId')?.value||'';
+  const ptDx=document.getElementById('ptDx')?.value||'';
+
+  // Drug legend
+  const legendEls=[];
+  allDrugs.forEach((d,i)=>{
+    const lx=PAD+(i%6)*145;
+    const ly=PAD+34;
+    const {bg,fg}=drugColor(d.mol);
+    legendEls.push(R(lx, ly-1, 10, 10, bg, 2));
+    legendEls.push(T(lx+14, ly+8, d.mol, 8, 'rgba(255,255,255,0.8)'));
+  });
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SVG_W} ${totalH}" width="${SVG_W}" height="${totalH}">
+  <!-- Header -->
+  <rect x="0" y="0" width="${SVG_W}" height="${PAD+48}" fill="#0d1b2a"/>
+  <text x="${PAD}" y="26" font-size="17" font-weight="bold" fill="#ffffff" font-family="Georgia,serif">OncoDose — Treatment Roadmap</text>
+  <text x="${PAD}" y="42" font-size="10" fill="#7f8c8d" font-family="Arial,sans-serif">${regimenN}${ptName?' · Patient: '+ptName:''}${ptId?' · MRD: '+ptId:''}${ptDx?' · '+ptDx:''}${startDateVal?' · Start: '+startDateVal:''}</text>
+  <text x="${SVG_W-PAD}" y="42" font-size="9" fill="#566573" font-family="Arial,sans-serif" text-anchor="end">Printed: ${today}</text>
+  ${legendEls.join(' ')}
+  <!-- Content -->
+  ${els.join(' ')}
+  <!-- Footer -->
+  <rect x="0" y="${totalH-20}" width="${SVG_W}" height="20" fill="#f0ede8"/>
+  <text x="${SVG_W/2}" y="${totalH-7}" font-size="8" fill="#aaa" text-anchor="middle" font-family="Arial,sans-serif">Decision-support tool only. Final dose approval is the responsibility of the treating oncologist. OncoDose v4</text>
+</svg>`;
+
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Treatment Roadmap${ptName?' — '+ptName:''}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:#fff;font-family:Arial,sans-serif;}
+    .toolbar{padding:10px 16px;background:#0d1b2a;display:flex;gap:10px;align-items:center;position:sticky;top:0;z-index:10;}
+    .toolbar button{padding:6px 14px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:500;}
+    .btn-print{background:#e74c3c;color:#fff;}
+    .btn-download{background:#1a6b45;color:#fff;}
+    .btn-close{background:rgba(255,255,255,0.15);color:#fff;}
+    .toolbar span{color:rgba(255,255,255,0.6);font-size:12px;margin-left:auto;}
+    .svg-wrap{padding:12px;overflow:auto;}
+    svg{max-width:100%;height:auto;display:block;}
+    @media print{
+      .toolbar{display:none!important;}
+      .svg-wrap{padding:0;}
+      body{margin:0;}
+      svg{
+        width:100vw !important;
+        height:auto !important;
+        max-height:none !important;
+      }
+      @page{margin:6mm;size:A4 landscape;}
+    }
+  </style></head>
+  <body>
+  <div class="toolbar">
+    <button class="btn-print" onclick="window.print()">🖨 Print</button>
+    <button class="btn-download" onclick="downloadSVG()">💾 Save as HTML</button>
+    <button class="btn-close" onclick="window.close()">✕ Close</button>
+    <span>Treatment Roadmap${ptName?' — '+ptName:''}  ·  ${today}</span>
+  </div>
+  <div class="svg-wrap">${svg}</div>
+  <\/script>
+  function downloadSVG(){
+    var blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='Roadmap${ptName?'_'+ptName.replace(/\s+/g,'_'):''}_${today.replace(/\s+/g,'_')}.html';
+    a.click();
+  }
+  <\/script>
+  </body></html>`;
+
+  const w=window.open('','_blank','width=1050,height=750');
+  if(w){w.document.write(html);w.document.close();}
+  else showToast('Please allow popups to open the roadmap');
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function fmt(n){return Math.round(n).toLocaleString('en-IN');}
+function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500);}
+function recalcAll(){updateRoadmap();updateBilling();}
+function switchTab(tab){
+  ['builder','roadmap','billing','saved','formulary'].forEach(t=>{
+    const el=document.getElementById(`tab-${t}`);if(el)el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===['builder','roadmap','billing','saved','formulary'].indexOf(tab)));
+  if(tab==='roadmap')updateRoadmap();
+  if(tab==='billing')updateBilling();
+  if(tab==='saved')renderSaved();
+  if(tab==='formulary')renderFormulary();
+}
+function printBilling(){showPrintMenu();}
+
+// INIT
+document.getElementById('startDate').value=new Date().toISOString().split('T')[0];
+setMode('template');
+renderSaved();
+// Set default BSA for template mode
+pt.bsa=1.73;pt.gfr=80;
+document.getElementById('bsaVal').textContent='1.73*';
+document.getElementById('gfrVal').textContent='80*';
+document.getElementById('carboVal').textContent=`${Math.round(5*105)} / ${Math.round(6*105)} mg*`;
+</script>
+
+<!-- ── FIREBASE LOGIN MODAL ── -->
+<div id="fbLoginModal" style="display:none;position:fixed;inset:0;background:rgba(13,27,42,0.85);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:32px;width:360px;max-width:95vw;box-shadow:0 24px 64px rgba(0,0,0,0.4);">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);margin-bottom:4px;">OncoDose <span style="color:#e74c3c;">v4</span></div>
+      <div style="font-size:12px;color:var(--ink-muted);">Sign in to sync across devices</div>
+    </div>
+
+    <!-- Google Sign In -->
+    <button onclick="fbLoginGoogle()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;margin-bottom:16px;transition:all 0.15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-3.58-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+      <div style="flex:1;height:1px;background:#eee;"></div>
+      <span style="font-size:11px;color:#aaa;">or</span>
+      <div style="flex:1;height:1px;background:#eee;"></div>
+    </div>
+
+    <!-- Email/Password -->
+    <div id="fbLoginMode" style="display:block;">
+      <div id="fbRegisterName" style="display:none;margin-bottom:10px;">
+        <label style="font-size:10px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px;">Your Name</label>
+        <input id="fbName" type="text" placeholder="Dr. Varun" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;" oninput="fbClearError()">
+      </div>
+      <div style="margin-bottom:10px;">
+        <label style="font-size:10px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px;">Email</label>
+        <input id="fbEmail" type="email" placeholder="varun@caarya.in" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;" oninput="fbClearError()" onkeydown="if(event.key==='Enter')document.getElementById('fbPassword').focus()">
+      </div>
+      <div style="margin-bottom:6px;">
+        <label style="font-size:10px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px;">Password</label>
+        <input id="fbPassword" type="password" placeholder="••••••••" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;" oninput="fbClearError()" onkeydown="if(event.key==='Enter')fbLoginEmail()">
+      </div>
+      <div id="fbError" style="display:none;font-size:11px;color:#e74c3c;margin-bottom:8px;padding:6px 10px;background:#fdecea;border-radius:6px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button id="fbSubmitBtn" onclick="fbLoginEmail()" style="flex:1;padding:10px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s;">Sign In</button>
+      </div>
+      <div style="text-align:center;">
+        <button id="fbToggleMode" onclick="fbToggleRegister()" style="background:none;border:none;color:var(--blue);font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;text-decoration:underline;">Don't have an account? Register</button>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eee;text-align:center;">
+      <button onclick="fbContinueOffline()" style="background:none;border:none;color:#aaa;font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Continue without account (local only)</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
